@@ -1,0 +1,36 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { MesReferencia } from "./MesReferencia";
+
+export enum DespesaStatus {
+    PREVISTO = "previsto",
+    REALIZADO = "realizado"
+}
+
+
+@Entity()
+export class Despesa {
+    @PrimaryGeneratedColumn()
+    id!: number;
+
+    @ManyToOne(() => MesReferencia)
+    mesReferencia!: MesReferencia; // Pode ser um ID ou um objeto
+
+    @Column()
+    descricao!: string;
+    @Column()
+    categoria!: string;
+
+      @Column({
+            type: "enum",
+            enum: DespesaStatus,
+            default: DespesaStatus.PREVISTO
+        })
+        status!: DespesaStatus;
+
+
+    @Column("decimal")
+    valor!: number;
+
+    @Column("date")
+    data!: string;
+}

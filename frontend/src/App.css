@@ -1,0 +1,79 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Lato", serif;
+    color: #182020;
+    
+}
+
+/* Remove a lista de estilos padrão */
+ul, ol {
+    list-style: none;
+}
+
+/* Remove o sublinhado dos links */
+a {
+    text-decoration: none;
+    color: inherit; /* Herda a cor do texto pai */
+}
+
+/* Remove bordas e estilos de elementos como botões e inputs */
+button, input, textarea, select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    outline: none;
+    background: none;
+    font-family: inherit; /* Garante que os elementos usem a mesma fonte do resto do site */
+    font-size: inherit;
+    color: inherit;
+}
+
+/* Remove espaçamento interno de elementos de formulário */
+input, textarea, select {
+    padding: 0;
+}
+
+/* Remove o espaçamento padrão das tabelas */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Remove o espaçamento padrão das imagens */
+img {
+    display: block; /* Corrige problemas de espaçamento abaixo das imagens */
+    max-width: 100%; /* Garante que as imagens sejam responsivas */
+    height: auto;
+}
+
+/* Remove o espaçamento padrão dos parágrafos */
+p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Remove o espaçamento padrão dos cabeçalhos */
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+    font-weight: normal; /* Opcional: remove o negrito padrão */
+}
+
+/* Remove o espaçamento padrão dos elementos de citação */
+blockquote, q {
+    quotes: none;
+}
+
+/* Remove o espaçamento padrão dos elementos de citação */
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+body {
+    background-color: #f2f2f2;
+}

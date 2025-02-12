@@ -1,0 +1,23 @@
+?>:
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza horizontalmente */
+    justify-content: center; /* Centraliza verticalmente */
+    padding: 16px;
+  }
+  
+  .receitas {
+    max-width: 80% !important; /* Largura máxima para o conteúdo */
+    width: 80% !important; /* Garante responsividade */
+    text-align: center!important; /* Centraliza o texto */
+    margin: 0 auto;
+  }
+
+  .receitas_texto  { 
+    margin: 25px !important;
+    font-size: 32px !important;
+    font-weight: bold  !important;
+
+  }
