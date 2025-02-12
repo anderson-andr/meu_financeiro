@@ -35,7 +35,7 @@ const Despesas = () => {
   // Função para buscar despesas
   const fetchDespesas = async () => {
     try {
-      const response = await axios.get( `${api}/despesas`);
+      const response = await api.get( `/despesas`);
       // Ordena as despesas pelo mês de referência (decrescente)
       const sortedDespesas = response.data.sort((a, b) => {
         return new Date(b.mesReferencia) - new Date(a.mesReferencia);
