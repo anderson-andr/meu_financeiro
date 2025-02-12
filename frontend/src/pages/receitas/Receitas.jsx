@@ -20,6 +20,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import "./receitas.css";
 
+import api from "../../services/api";
 const Receitas = () => {
   const [receitas, setReceitas] = useState([]);
   const [openModal, setOpenModal] = useState(false); // Estado para controlar a visibilidade do modal
@@ -29,14 +30,17 @@ const Receitas = () => {
 
   useEffect(() => {
     fetchReceitas();
+  
+   
   }, []);
 
   // Função para buscar receitas
   const fetchReceitas = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/receitas");
+      const response = await api.get(  `/receitas`);
       // Ordena as receitas pelo mês de referência (decrescente)
       const sortedReceitas = response.data.sort((a, b) => {
+        
         return new Date(b.mesReferencia) - new Date(a.mesReferencia);
       });
       setReceitas(sortedReceitas);
@@ -49,11 +53,11 @@ const Receitas = () => {
   const handleReceitaAdicionada = async (novaReceita) => {
     if (editingReceita) {
       // Se estiver editando, atualiza a receita existente
-      await axios.put(`http://localhost:3000/api/receitas/${editingReceita.id}`, novaReceita);
+      await api.put( `/receitas/${editingReceita.id}`, novaReceita);
       setEditingReceita(null); // Limpa o estado de edição
     } else {
       // Se não estiver editando, adiciona uma nova receita
-      await axios.post("http://localhost:3000/api/receitas", novaReceita);
+      await api.post( `/receitas`, novaReceita);
     }
     fetchReceitas(); // Atualiza a lista de receitas
   };
@@ -61,7 +65,7 @@ const Receitas = () => {
   // Função para excluir uma receita
   const handleDeleteReceita = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/receitas/${id}`);
+      await api.delete( `/receitas/${id}`);
       fetchReceitas(); // Atualiza a lista de receitas após a exclusão
     } catch (error) {
       console.error("Erro ao excluir receita:", error);

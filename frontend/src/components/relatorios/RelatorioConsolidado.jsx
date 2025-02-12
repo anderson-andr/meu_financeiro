@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import api from "../../services/api"
 import {
   Table,
   TableBody,
@@ -21,7 +22,7 @@ const RelatorioConsolidado = () => {
   // Função para buscar os dados do relatório consolidado
   const fetchRelatorios = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/relatorios/consolidado");
+      const response = await api.get( `/relatorios/consolidado`);
       setRelatorios(response.data);
     } catch (error) {
       console.error("Erro ao buscar relatórios consolidados:", error);

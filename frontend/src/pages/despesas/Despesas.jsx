@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import DespesaForm from "../../components/despesaForm/DespesaForm"; // Importando o formulário
+import DespesaForm from "../../components/despesaForm/DespesaForm"; 
+import api from "../../services/api";
 import {
   Table,
   TableBody,
@@ -34,7 +35,7 @@ const Despesas = () => {
   // Função para buscar despesas
   const fetchDespesas = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/despesas");
+      const response = await axios.get( `${api}/despesas`);
       // Ordena as despesas pelo mês de referência (decrescente)
       const sortedDespesas = response.data.sort((a, b) => {
         return new Date(b.mesReferencia) - new Date(a.mesReferencia);
@@ -49,11 +50,11 @@ const Despesas = () => {
   const handleDespesaAdicionada = async (novaDespesa) => {
     if (editingDespesa) {
       // Se estiver editando, atualiza a despesa existente
-      await axios.put(`http://localhost:3000/api/despesas/${editingDespesa.id}`, novaDespesa);
+      await api.put( `$/despesas/${editingDespesa.id}`, novaDespesa);
       setEditingDespesa(null); // Limpa o estado de edição
     } else {
       // Se não estiver editando, adiciona uma nova despesa
-      await axios.post("http://localhost:3000/api/despesas", novaDespesa);
+      await api.post(`/despesas`, novaDespesa);
     }
     fetchDespesas(); // Atualiza a lista de despesas
   };
@@ -61,7 +62,7 @@ const Despesas = () => {
   // Função para excluir uma despesa
   const handleDeleteDespesa = async (id) => {
     try {
-      await axios.delete(`http://localhost:3000/api/despesas/${id}`);
+      await api.delete( `/despesas/${id}`);
       fetchDespesas(); // Atualiza a lista de despesas após a exclusão
     } catch (error) {
       console.error("Erro ao excluir despesa:", error);

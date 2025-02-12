@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import api from "../../services/api";
 import {
   TextField,
   Button,
@@ -26,8 +27,8 @@ const RelatorioMesECategoria = () => {
     }
 
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/relatorios/mesCategoria/${mes}&${categoria}`
+      const response = await api.get( 
+        `/relatorios/mesCategoria/${mes}&${categoria}`
       );
       setResults(response.data);
       setError("");

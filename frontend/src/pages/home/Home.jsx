@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Box, Grid, Paper, TextField, Button, Typography } from "@mui/material";
 import { Doughnut, Bar } from "react-chartjs-2";
+import api from "../../services/api";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -27,17 +28,14 @@ const Home = () => {
   const [dataRelatorio, setDataRelatorio] = useState(null);
   const [error, setError] = useState("");
 
+  // Função para buscar os dados do relatório geral
   const fetchRelatorioGeral = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/relatorios/geral/${mesReferencia}`
-      );
+      const response = await api.get(`/relatorios/geral/${mesReferencia}`);
       setDataRelatorio(response.data);
       setError("");
     } catch (error) {
-      setError(
-        "Erro ao buscar dados. Verifique sua conexão ou tente novamente."
-      );
+      setError("Erro ao buscar dados. Verifique sua conexão ou tente novamente.");
       setDataRelatorio(null);
     }
   };
@@ -46,13 +44,16 @@ const Home = () => {
     fetchRelatorioGeral();
   }, [mesReferencia]);
 
+  // Função para calcular a porcentagem realizada vs prevista
   const calculatePercent = (realizado, previsto) => {
     if (!previsto || previsto === 0) return 0;
     return ((realizado / previsto) * 100).toFixed(2);
   };
 
+  // Função para obter os totais de receitas e despesas
   const getTotalPrevistoRealizado = () => {
     if (!dataRelatorio) return null;
+
     return {
       labels: [
         "Receitas Previstas",
@@ -75,8 +76,10 @@ const Home = () => {
     };
   };
 
+  // Função para obter a porcentagem de despesas no orçamento
   const getDespesasPorcentagemOrcamento = () => {
     if (!dataRelatorio) return null;
+
     return {
       labels: ["Orçamento Restante", "Despesas Realizadas"],
       datasets: [
@@ -93,8 +96,10 @@ const Home = () => {
     };
   };
 
+  // Função para obter as categorias com maior gasto
   const getCategoriasMaisGastadoras = () => {
-    if (!dataRelatorio) return null;
+    if (!dataRelatorio || !Array.isArray(dataRelatorio.despesas)) return null;
+
     const categoriasDespesas = {};
     dataRelatorio.despesas.forEach((despesa) => {
       const categoria = despesa.categoria?.toUpperCase() || "SEM CATEGORIA";
@@ -129,12 +134,11 @@ const Home = () => {
       <Typography variant="h4" gutterBottom>
         Dashboard Financeiro
       </Typography>
-
       <Typography variant="h5" gutterBottom>
         Análise Mensal
       </Typography>
-
       <Grid container spacing={4}>
+        {/* Gráfico de Receitas e Despesas */}
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
@@ -157,6 +161,7 @@ const Home = () => {
           </Paper>
         </Grid>
 
+        {/* Gráfico de Percentual de Despesas no Orçamento */}
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
@@ -179,6 +184,7 @@ const Home = () => {
           </Paper>
         </Grid>
 
+        {/* Gráfico de Categorias com Maior Gasto */}
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
@@ -199,6 +205,7 @@ const Home = () => {
           </Paper>
         </Grid>
 
+        {/* Resumo Financeiro */}
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
@@ -213,34 +220,33 @@ const Home = () => {
             </Typography>
             {dataRelatorio ? (
               <div style={{ width: "70%", height: "300px", margin: "0 auto" }}>
-                {/* Resumo Financeiro */}
                 <Typography style={{ padding: "10px", fontSize: "20px" }}>
                   💰 Receitas Previstas:{" "}
-                  {dataRelatorio.totalReceitasPrevisto?.toLocaleString(
-                    "pt-BR",
-                    { style: "currency", currency: "BRL" }
-                  )}
+                  {dataRelatorio.totalReceitasPrevisto?.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                 </Typography>
                 <Typography style={{ padding: "10px", fontSize: "20px" }}>
                   ✅ Receitas Realizadas:{" "}
-                  {dataRelatorio.totalReceitasRealizado?.toLocaleString(
-                    "pt-BR",
-                    { style: "currency", currency: "BRL" }
-                  )}
+                  {dataRelatorio.totalReceitasRealizado?.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                 </Typography>
                 <Typography style={{ padding: "10px", fontSize: "20px" }}>
                   💳 Despesas Previstas:{" "}
-                  {dataRelatorio.totalDespesasPrevisto?.toLocaleString(
-                    "pt-BR",
-                    { style: "currency", currency: "BRL" }
-                  )}
+                  {dataRelatorio.totalDespesasPrevisto?.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                 </Typography>
                 <Typography style={{ padding: "10px", fontSize: "20px" }}>
                   ❌ Despesas Realizadas:{" "}
-                  {dataRelatorio.totalDespesasRealizado?.toLocaleString(
-                    "pt-BR",
-                    { style: "currency", currency: "BRL" }
-                  )}
+                  {dataRelatorio.totalDespesasRealizado?.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
                 </Typography>
                 <Typography
                   style={{
@@ -262,12 +268,8 @@ const Home = () => {
           </Paper>
         </Grid>
 
-        {error && (
-          <Typography variant="body1" color="error" className="mt-4">
-            {error}
-          </Typography>
-        )}
-        <Box mt={4} style={{margin:" 20px auto"}}>
+        {/* Campo para selecionar o mês */}
+        <Box mt={4} style={{ margin: "20px auto" }}>
           <Typography variant="subtitle1" gutterBottom>
             Selecione o Mês:
           </Typography>
@@ -287,10 +289,8 @@ const Home = () => {
             Atualizar Gráficos
           </Button>
         </Box>
-        
 
-
-      
+        {/* Relatório Consolidado */}
         <Grid item xs={12}>
           <Paper elevation={3} style={{ padding: "16px" }}>
             <Typography

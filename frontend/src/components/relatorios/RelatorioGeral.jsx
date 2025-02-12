@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import api from "../../services/api";
 import {
   TextField,
   Button,
@@ -27,14 +28,14 @@ const RelatorioGeral = () => {
     }
 
     try {
-      let url = `http://localhost:3000/api/relatorios/geral/${mes}`;
+      let url = `/relatorios/geral/${mes}`;
       if (status) {
         url += `/${status}`; // Adiciona o status apenas se ele for especificado
       }
 
       console.log("URL da requisição:", url);
 
-      const response = await axios.get(url);
+      const response = await api.get(url);
       setResults(response.data);
       setError("");
     } catch (error) {
