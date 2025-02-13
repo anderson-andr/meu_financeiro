@@ -5,5 +5,5 @@ const api = axios.create({
 });
 
 
-// ajustes
+// 
 export default api;
