@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://3.139.109.36:3000/api"
+    baseURL: "https://api.minhas-financias.online/api"
 });
 
 
