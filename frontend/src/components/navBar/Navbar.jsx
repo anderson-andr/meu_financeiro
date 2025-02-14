@@ -12,13 +12,13 @@ const Navbar = () => {
       
       <ul>
         <li>
-          <Button variant="contained" onClick={() => navigate("/")}>
+          <Button variant="text" onClick={() => navigate("/")}>
             Início
           </Button>
         </li>
-        <li><Button variant="contained" onClick={() => navigate("/relatorios")}>Relatórios</Button></li>
-        <li><Button variant="contained" onClick={() => navigate("/receitas")}>Receitas</Button></li>
-        <li><Button variant="contained" onClick={() => navigate("/despesas")}>Despesas</Button></li>
+        <li><Button variant="text" onClick={() => navigate("/relatorios")}>Relatórios</Button></li>
+        <li><Button vvariant="text" onClick={() => navigate("/receitas")}>Receitas</Button></li>
+        <li><Button variant="text" onClick={() => navigate("/despesas")}>Despesas</Button></li>
       </ul>
       
     </nav>
