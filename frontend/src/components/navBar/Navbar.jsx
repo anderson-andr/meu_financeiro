@@ -16,9 +16,9 @@ const Navbar = () => {
             Início
           </Button>
         </li>
-        <li><Button onClick={() => navigate("/relatorios")}>Relatórios</Button></li>
-        <li><Button onClick={() => navigate("/receitas")}>Receitas</Button></li>
-        <li><Button onClick={() => navigate("/despesas")}>Despesas</Button></li>
+        <li><Button variant="contained" onClick={() => navigate("/relatorios")}>Relatórios</Button></li>
+        <li><Button variant="contained" onClick={() => navigate("/receitas")}>Receitas</Button></li>
+        <li><Button variant="contained" onClick={() => navigate("/despesas")}>Despesas</Button></li>
       </ul>
       
     </nav>
