@@ -28,7 +28,7 @@ const RelatorioGeral = () => {
     }
 
     try {
-      let url = `${api}/relatorios/geral/${mes}`;
+      let url = `/relatorios/geral/${mes}`;
       if (status) {
         url += `/${status}`; // Adiciona o status apenas se ele for especificado
       }
