@@ -4,11 +4,11 @@ import Button from '@mui/material/Button';
 
 
 const Navbar = () => {
-  const navigate = useNavigate();
+
+  const navigate = useNavigate()
   return (
     <nav className="nav">
       
-
       
       <ul>
         <li>
