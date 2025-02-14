@@ -4,16 +4,11 @@
     display: flex;
     width: 100%;
     align-items: center;
-    justify-content: space-between;
-    background-color:#182020;
+    justify-content: center;
+    background-color:#fff;
 }
 
-.nav h1 {
-    color : #fff;
-    margin-left: 20px;
 
-
-}
 
 .nav ul {
     display: flex;
@@ -34,3 +29,34 @@ nav ul li a {
     color : #fff;
     font-size: 20px;
   }
+
+
+
+@media screen and ( max-width: 400px) {
+
+    .nav {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        background-color:#fff;
+    }
+    
+
+
+    .nav ul {
+        display: flex;
+        list-style: none;
+        margin: 10px;
+        margin-left: 5px;
+    }
+
+
+    nav ul li a {
+        text-decoration: none; 
+        color : #fff;
+        font-size: 16px !important;
+      }
+
+    
+}
