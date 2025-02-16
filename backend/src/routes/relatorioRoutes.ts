@@ -50,4 +50,15 @@ router.get("/relatorios/analitico", async (req: Request, res: Response) => {
     await relatorioController.getRelatorioAnalitico(req, res);
 });
 
+// Rota para obter o relatório geral de despesas por mês
+router.get("/relatorios/consolidado2", async (req: Request, res: Response) => {
+    await relatorioController.getRelatorioConsolidado2(req, res);
+});
+
+
+// Rota para obter o relatório geral de despesas por mês
+router.get("/relatorios/analitico2", async (req: Request, res: Response) => {
+    await relatorioController.getRelatorioAnalitico2(req, res);
+});
+
 export default router;

@@ -350,6 +350,26 @@ async getRelatorioConsolidado(req: Request, res: Response) {
 }
 
 
+async getRelatorioAnalitico2(req: Request, res: Response) {
+    try {
+        const relatorios = await reportService.generateAnalyticalMonthlyReports2();
+        res.json(relatorios);
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao gerar relatório analítico", error });
+    }
+}
+
+async getRelatorioConsolidado2(req: Request, res: Response) {
+    try {
+        const reports = await reportService.generateMonthlyReports2(); // Chama o método
+        res.status(200).json(reports);
+    } catch (error) {
+        console.error("Erro ao gerar relatório consolidado:", error);
+        res.status(500).json({ message: "Erro ao gerar relatório consolidado" });
+    }
+}
+
+
 
 
 }
