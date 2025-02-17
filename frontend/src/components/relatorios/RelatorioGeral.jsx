@@ -71,26 +71,30 @@ const RelatorioGeral = () => {
       {error && <Typography color="error">{error}</Typography>}
 
       {results.mesReferencia && (
+
         <>
-          <Typography variant="subtitle1">
-            💰 Receitas Previstas: R$ {results.totalReceitasPrevisto?.toFixed(2) || 0}
-          </Typography>
-          <Typography variant="subtitle1">
-            💳 Despesas Previstas: R$ {results.totalDespesasPrevisto?.toFixed(2) || 0}
-          </Typography>
-          <Typography variant="subtitle1">
-            ✅ Receitas Realizadas: R$ {results.totalReceitasRealizado?.toFixed(2) || 0}
-          </Typography>
-          <Typography variant="subtitle1">
-            ❌ Despesas Realizadas: R$ {results.totalDespesasRealizado?.toFixed(2) || 0}
-          </Typography>
-          <Typography
-            className={`font-bold ${
-              results.saldo >= 0 ? "text-green-600" : "text-red-600"
-            }`}
-          >
-            💼 Saldo: R$ {results.saldo?.toFixed(2) || 0}
-          </Typography>
+           <Typography variant="subtitle1">
+              Saldo Inical: R$ {results.saldoInicial?.toFixed(2).replace('.', ',') || 0}
+            </Typography>
+            <Typography variant="subtitle1">
+              💰 Receitas Previstas: R$ {results.totalReceitasPrevisto?.toFixed(2).replace('.', ',') || 0}
+            </Typography>
+            <Typography variant="subtitle1">
+              💳 Despesas Previstas: R$ {results.totalDespesasPrevisto?.toFixed(2).replace('.', ',') || 0}
+            </Typography>
+            <Typography variant="subtitle1">
+              ✅ Receitas Realizadas: R$ {results.totalReceitasRealizado?.toFixed(2).replace('.', ',') || 0}
+            </Typography>
+            <Typography variant="subtitle1">
+              ❌ Despesas Realizadas: R$ {results.totalDespesasRealizado?.toFixed(2).replace('.', ',') || 0}
+            </Typography>
+            <Typography
+              className={`font-bold ${
+                results.saldo >= 0 ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              💼 Saldo Final: R$ {results.saldoFinal?.toFixed(2).replace('.', ',') || 0}
+            </Typography>  
 
           <Typography variant="h6">Receitas:</Typography>
           <TableContainer component={Paper}>

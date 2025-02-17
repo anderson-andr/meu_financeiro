@@ -51,10 +51,14 @@ const Home = () => {
     return ((realizado / previsto) * 100).toFixed(2);
   };
 
-  // Função para obter os totais de receitas e despesas
   const getTotalPrevistoRealizado = () => {
     if (!dataRelatorio) return null;
-
+  
+    // Determinar se o saldo inicial deve ser somado às receitas ou despesas
+    const saldoInicial = dataRelatorio.saldoInicial || 0;
+    const receitasPrevistas = (dataRelatorio.totalReceitasPrevisto || 0) + (saldoInicial > 0 ? saldoInicial : 0);
+    const despesasPrevistas = (dataRelatorio.totalDespesasPrevisto || 0) + (saldoInicial < 0 ? Math.abs(saldoInicial) : 0);
+  
     return {
       labels: [
         "Receitas Previstas",
@@ -66,9 +70,9 @@ const Home = () => {
         {
           label: "Totais",
           data: [
-            dataRelatorio.totalReceitasPrevisto || 0,
+            receitasPrevistas,
             dataRelatorio.totalReceitasRealizado || 0,
-            dataRelatorio.totalDespesasPrevisto || 0,
+            despesasPrevistas,
             dataRelatorio.totalDespesasRealizado || 0,
           ],
           backgroundColor: ["#28a745", "#20c997", "#dc3545", "#ff6384"],
@@ -76,6 +80,7 @@ const Home = () => {
       ],
     };
   };
+  
 
   // Função para obter a porcentagem de despesas no orçamento
   const getDespesasPorcentagemOrcamento = () => {
@@ -221,6 +226,19 @@ const Home = () => {
             </Typography>
             {dataRelatorio ? (
               <div style={{ width: "70%", height: "300px", margin: "0 auto" }}>
+                <Typography
+                  style={{
+                    padding: "10px",
+                    fontSize: "20px",
+                    color: dataRelatorio.saldoInicial >= 0 ? "green" : "red",
+                  }}
+                >
+                    Saldo Inicial:{" "}
+                  {dataRelatorio.saldoInicial?.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </Typography>
                 <Typography className="resumo_texto">
                   💰 Receitas Previstas:{" "}
                   {dataRelatorio.totalReceitasPrevisto?.toLocaleString("pt-BR", {
@@ -253,11 +271,11 @@ const Home = () => {
                   style={{
                     padding: "10px",
                     fontSize: "20px",
-                    color: dataRelatorio.saldo >= 0 ? "green" : "red",
+                    color: dataRelatorio.saldoFinal >= 0 ? "green" : "red",
                   }}
                 >
-                  💼 Saldo:{" "}
-                  {dataRelatorio.saldo?.toLocaleString("pt-BR", {
+                  💼 Saldo Final:{" "}
+                  {dataRelatorio.saldoFinal?.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
