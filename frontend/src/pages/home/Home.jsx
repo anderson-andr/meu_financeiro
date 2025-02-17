@@ -268,7 +268,7 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#fff",borderRadius: '8px' }}
+            style={{ padding: "16px", height: "400px", background: "#fff",borderRadius: '8px', maxHeight:'500px'}}
           >
             <Typography
               variant="h6"
