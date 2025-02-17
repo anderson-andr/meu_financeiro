@@ -11,18 +11,19 @@ const despesaService = new DespesaService(despesaRepository);
 
 export class DespesaController {
     // Método para pegar todas as despesas do usuário logado
+// Método para pegar todas as despesas do usuário logado
 async getAll(req: any, res: Response) {
     try {
         // Extrai o userId do objeto req.user (inserido pelo middleware de autenticação)
         const { userId } = req.user; 
         const despesas = await despesaService.getAllByUser(userId);
-
+        
         // Formata as despesas para incluir o mês de referência no retorno
         const despesasComMesReferencia = despesas.map((despesa) => ({
             ...despesa,
             mesReferencia: despesa.mesReferencia ? despesa.mesReferencia.referencia : null,
         }));
-
+        
         res.json(despesasComMesReferencia);
     } catch (error) {
         res.status(500).json({ message: "Erro ao buscar despesas", error });

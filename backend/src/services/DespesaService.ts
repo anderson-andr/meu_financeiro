@@ -16,7 +16,8 @@ export class DespesaService {
     // Método para obter todas as despesas de um usuário específico
     async getAllByUser(userId: number) {
         return await this.despesaRepository.find({
-            where: { user: { id: userId } }, // Filtra por usuário
+            where: { user: { id: userId } },
+            relations: ["mesReferencia"], // Inclui a relação com MesReferencia // Filtra por usuário
         });
     }
 

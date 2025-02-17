@@ -81,26 +81,79 @@ const Home = () => {
     };
   };
   
+// Função principal para calcular o orçamento e formatar os dados
+const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
+  // Verifica se dataRelatorio existe
+  if (!dataRelatorio) return null;
 
-  // Função para obter a porcentagem de despesas no orçamento
-  const getDespesasPorcentagemOrcamento = () => {
-    if (!dataRelatorio) return null;
+  // Determina o saldo inicial e calcula os totais
+  const saldoInicial = dataRelatorio.saldoInicial || 0;
+  const totalReceitas = (dataRelatorio.totalReceitasPrevisto || 0) + (saldoInicial > 0 ? saldoInicial : 0);
+  const totalDespesas = (dataRelatorio.totalDespesasPrevisto || 0) + (saldoInicial < 0 ? Math.abs(saldoInicial) : 0);
+  const diferenca = totalReceitas - totalDespesas;
 
-    return {
-      labels: ["Orçamento Restante", "Despesas Realizadas"],
-      datasets: [
-        {
-          label: "Orçamento",
-          data: [
-            dataRelatorio.totalReceitasRealizado -
-              dataRelatorio.totalDespesasRealizado,
-            dataRelatorio.totalDespesasRealizado,
+  // Calcula o valor que falta ou o saldo restante
+  const valorFaltante = diferenca < 0 ? Math.abs(diferenca) : 0;
+  const saldoRestante = diferenca >= 0 ? diferenca : 0;
+
+  // Estrutura para colunas
+  if (formato === "colunas") {
+      return {
+          labels: [
+              "Orçamento Total (Receitas)",
+              "Despesas Previstas",
+              "Saldo Restante",
+              "Valor Faltante"
           ],
-          backgroundColor: ["#17a2b8", "#dc3545"],
-        },
-      ],
-    };
-  };
+          datasets: [
+              {
+                  label: "Totais",
+                  data: [
+                      totalReceitas,
+                      totalDespesas,
+                      saldoRestante,
+                      valorFaltante
+                  ],
+                  backgroundColor: ["#28a745", "#dc3545", "#17a2b8", "#ffc107"],
+              },
+          ],
+      };
+  }
+
+  // Estrutura para linhas
+  if (formato === "linhas") {
+      return {
+          labels: ["Valores"],
+          datasets: [
+              {
+                  label: "Orçamento Total (Receitas)",
+                  data: [totalReceitas],
+                  backgroundColor: "#28a745",
+              },
+              {
+                  label: "Despesas Previstas",
+                  data: [totalDespesas],
+                  backgroundColor: "#dc3545",
+              },
+              {
+                  label: "Saldo Restante",
+                  data: [saldoRestante],
+                  backgroundColor: "#17a2b8",
+              },
+              {
+                  label: "Valor Faltante",
+                  data: [valorFaltante],
+                  backgroundColor: "#ffc107",
+              },
+          ],
+      };
+  }
+
+  // Caso o formato seja inválido
+  throw new Error("Formato inválido. Use 'colunas' ou 'linhas'.");
+};
+
+  
 
   // Função para obter as categorias com maior gasto
   const getCategoriasMaisGastadoras = () => {
