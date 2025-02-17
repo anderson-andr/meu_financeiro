@@ -1,16 +1,12 @@
-// src/utils/auth.js
-
-// Salva o token no localStorage
+// Alterando para sessionStorage
 export const saveToken = (token) => {
-    localStorage.setItem('token', token);
-  };
-  
-  // Obtém o token do localStorage
-  export const getToken = () => {
-    return localStorage.getItem('token');
-  };
-  
-  // Remove o token do localStorage
-  export const removeToken = () => {
-    localStorage.removeItem('token');
-  };
+  sessionStorage.setItem('token', token);
+};
+
+export const getToken = () => {
+  return sessionStorage.getItem('token');
+};
+
+export const removeToken = () => {
+  sessionStorage.removeItem('token');
+};

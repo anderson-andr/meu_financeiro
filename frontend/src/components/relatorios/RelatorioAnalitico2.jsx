@@ -1,5 +1,3 @@
-// src/components/relatorios/RelatorioAnalitico.jsx
-
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import {
@@ -68,14 +66,12 @@ const RelatorioAnalitico2 = () => {
       const tableData = [
         [
           Number(relatorio.saldoInicial).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-          Number(relatorio.receitas.reduce((sum, r) => sum + r.valorRealizado, 0)).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          }),
-          Number(relatorio.despesas.reduce((sum, d) => sum + d.valorRealizado, 0)).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          }),
+          Number(
+            relatorio.receitas.reduce((sum, r) => sum + r.valorRealizado, 0)
+          ).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(
+            relatorio.despesas.reduce((sum, d) => sum + d.valorRealizado, 0)
+          ).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
           Number(relatorio.saldoFinal).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         ],
       ];
@@ -99,12 +95,13 @@ const RelatorioAnalitico2 = () => {
       doc.text("Receitas", 14, startY);
       startY += 5;
 
-      const receitasHeaders = ["Descrição", "Valor", "Categoria", "Status"];
+      const receitasHeaders = ["Descrição", "Valor Previsto", "Valor Realizado", "Categoria", "Diferença"];
       const receitasData = relatorio.receitas.map((receita) => [
         receita.descricao,
+        Number(receita.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         Number(receita.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         receita.categoria || "Sem categoria",
-        receita.status,
+        Number(receita.diferenca).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
       ]);
 
       doc.autoTable({
@@ -122,31 +119,36 @@ const RelatorioAnalitico2 = () => {
       startY = doc.lastAutoTable.finalY + 10; // Atualiza a posição Y após a tabela
 
       // Adiciona as despesas
-      doc.setFontSize(12);
-      doc.text("Despesas", 14, startY);
-      startY += 5;
+      if (relatorio.despesas.length > 0) {
+        doc.setFontSize(12);
+        doc.text("Despesas", 14, startY);
+        startY += 5;
 
-      const despesasHeaders = ["Descrição", "Valor", "Categoria", "Status"];
-      const despesasData = relatorio.despesas.map((despesa) => [
-        despesa.descricao,
-        Number(despesa.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-        despesa.categoria || "Sem categoria",
-        despesa.status,
-      ]);
+        const despesasHeaders = ["Descrição", "Valor Previsto", "Valor Realizado", "Categoria", "Diferença"];
+        const despesasData = relatorio.despesas.map((despesa) => [
+          despesa.descricao,
+          Number(despesa.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(despesa.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          despesa.categoria || "Sem categoria",
+          Number(despesa.diferenca).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+        ]);
 
-      doc.autoTable({
-        head: [despesasHeaders],
-        body: despesasData,
-        startY: startY,
-        theme: "grid",
-        styles: {
-          fontSize: 8,
-          cellPadding: 1.5,
-          halign: "center",
-        },
-      });
+        doc.autoTable({
+          head: [despesasHeaders],
+          body: despesasData,
+          startY: startY,
+          theme: "grid",
+          styles: {
+            fontSize: 8,
+            cellPadding: 1.5,
+            halign: "center",
+          },
+        });
 
-      startY = doc.lastAutoTable.finalY + 20; // Espaço entre meses
+        startY = doc.lastAutoTable.finalY + 20; // Espaço entre meses
+      } else {
+        startY += 10; // Espaço adicional se não houver despesas
+      }
     });
 
     // Salva ou abre o PDF
@@ -165,7 +167,12 @@ const RelatorioAnalitico2 = () => {
       </Typography>
 
       {/* Botão para gerar o PDF */}
-      <Button variant="contained" color="primary" onClick={gerarPDF} sx={{ marginBottom: 3 }}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={gerarPDF}
+        sx={{ marginBottom: 3 }}
+      >
         Gerar PDF
       </Button>
 
@@ -231,7 +238,11 @@ const RelatorioAnalitico2 = () => {
                 {/* Detalhes expandidos */}
                 <TableRow>
                   <TableCell colSpan={5} style={{ paddingBottom: 0, paddingTop: 0 }}>
-                    <Collapse in={expandedRows[relatorio.mesReferencia]} timeout="auto" unmountOnExit>
+                    <Collapse
+                      in={expandedRows[relatorio.mesReferencia]}
+                      timeout="auto"
+                      unmountOnExit
+                    >
                       <Box sx={{ margin: 1 }}>
                         <Typography variant="h6" gutterBottom>
                           Detalhes do Mês
@@ -243,9 +254,10 @@ const RelatorioAnalitico2 = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell>Descrição</TableCell>
-                              <TableCell>Valor</TableCell>
+                              <TableCell>Valor Previsto</TableCell>
+                              <TableCell>Valor Realizado</TableCell>
                               <TableCell>Categoria</TableCell>
-                              <TableCell>Status</TableCell>
+                              <TableCell>Diferença</TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -253,47 +265,74 @@ const RelatorioAnalitico2 = () => {
                               <TableRow key={receita.id}>
                                 <TableCell>{receita.descricao}</TableCell>
                                 <TableCell>
+                                  {Number(receita.valorPrevisto).toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </TableCell>
+                                <TableCell>
                                   {Number(receita.valorRealizado).toLocaleString("pt-BR", {
                                     style: "currency",
                                     currency: "BRL",
                                   })}
                                 </TableCell>
-                                <TableCell>{receita.categoria}</TableCell>
-                                <TableCell>{receita.status}</TableCell>
+                                <TableCell>{receita.categoria || "Sem categoria"}</TableCell>
+                                <TableCell>
+                                  {Number(receita.diferenca).toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
                         </Table>
 
                         {/* Tabela de Despesas */}
-                        <Typography variant="subtitle1" sx={{ marginTop: 2 }}>
-                          Despesas
-                        </Typography>
-                        <Table size="small">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>Descrição</TableCell>
-                              <TableCell>Valor</TableCell>
-                              <TableCell>Categoria</TableCell>
-                              <TableCell>Status</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {relatorio.despesas.map((despesa) => (
-                              <TableRow key={despesa.id}>
-                                <TableCell>{despesa.descricao}</TableCell>
-                                <TableCell>
-                                  {Number(despesa.valorRealizado).toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  })}
-                                </TableCell>
-                                <TableCell>{despesa.categoria}</TableCell>
-                                <TableCell>{despesa.status}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
+                        {relatorio.despesas.length > 0 && (
+                          <>
+                            <Typography variant="subtitle1" sx={{ marginTop: 2 }}>
+                              Despesas
+                            </Typography>
+                            <Table size="small">
+                              <TableHead>
+                                <TableRow>
+                                  <TableCell>Descrição</TableCell>
+                                  <TableCell>Valor Previsto</TableCell>
+                                  <TableCell>Valor Realizado</TableCell>
+                                  <TableCell>Categoria</TableCell>
+                                  <TableCell>Diferença</TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {relatorio.despesas.map((despesa) => (
+                                  <TableRow key={despesa.id}>
+                                    <TableCell>{despesa.descricao}</TableCell>
+                                    <TableCell>
+                                      {Number(despesa.valorPrevisto).toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: "BRL",
+                                      })}
+                                    </TableCell>
+                                    <TableCell>
+                                      {Number(despesa.valorRealizado).toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: "BRL",
+                                      })}
+                                    </TableCell>
+                                    <TableCell>{despesa.categoria || "Sem categoria"}</TableCell>
+                                    <TableCell>
+                                      {Number(despesa.diferenca).toLocaleString("pt-BR", {
+                                        style: "currency",
+                                        currency: "BRL",
+                                      })}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </>
+                        )}
                       </Box>
                     </Collapse>
                   </TableCell>

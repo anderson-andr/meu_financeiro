@@ -13,7 +13,7 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
-import RelatorioConsolidado from "../../components/relatorios/RelatorioConsolidado"; // Importando o componente RelatorioConsolidado
+import RelatorioConsolidado2 from "../../components/relatorios/RelatorioConsolidado2"; // Importando o componente RelatorioConsolidado
 
 ChartJS.register(
   ArcElement,
@@ -295,14 +295,7 @@ const Home = () => {
         {/* Relatório Consolidado */}
         <Grid item xs={12}>
           <Paper elevation={3} style={{ padding: "16px" }}>
-            <Typography
-              variant="h6"
-              gutterBottom
-              style={{ fontSize: "20px", fontWeight: "700" }}
-            >
-              Relatório Consolidado Geral todos os Meses
-            </Typography>
-            <RelatorioConsolidado />{" "}
+            <RelatorioConsolidado2 />{" "}
             {/* Aqui você adiciona a tabela do relatório consolidado */}
           </Paper>
         </Grid>
