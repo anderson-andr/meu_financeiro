@@ -1,0 +1,94 @@
+/* src/pages/register.css */
+
+/* Estilização geral do container */
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Centraliza verticalmente */
+    background-color: #f0f4f8; /* Fundo claro */
+    padding: 20px;
+  }
+  
+  /* Título do formulário */
+  .register-container h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #333333;
+  }
+  
+  /* Estilização do formulário */
+  .register-container form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px; /* Largura máxima do formulário */
+    background: #ffffff; /* Fundo branco */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra leve */
+  }
+  
+  /* Estilização dos inputs */
+  .register-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #d1d5db; /* Borda cinza clara */
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease; /* Transição suave */
+  }
+  
+  .register-container input:focus {
+    border-color: #4a90e2; /* Destaque ao focar */
+    outline: none;
+  }
+  
+  /* Mensagem de erro */
+  .register-container .error-message {
+    color: #e74c3c; /* Vermelho suave */
+    margin-top: -10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+  
+  /* Estilização do botão de registro */
+  .register-container button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4a90e2; /* Azul suave */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Transição suave */
+  }
+  
+  .register-container button[type="submit"]:hover {
+    background-color: #357abd; /* Escurece o botão ao passar o mouse */
+  }
+  
+  /* Link para login */
+  .register-container .login-link {
+    margin-top: 15px;
+    text-align: center;
+  }
+  
+  .register-container .login-link p {
+    font-size: 0.9rem;
+    color: #333333;
+  }
+  
+  .register-container .login-link span {
+    color: #4a90e2; /* Azul suave */
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  
+  .register-container .login-link span:hover {
+    color: #357abd; /* Escurece o link ao passar o mouse */
+  }

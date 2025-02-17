@@ -20,6 +20,8 @@ import ReceitasGerais from "../../components/relatorios/ReceitasGerais";
 import DespesasGerais from "../../components/relatorios/DespesasGerais";
 import RelatorioConsolidado from "../../components/relatorios/RelatorioConsolidado";
 import RelatorioAnalitico from "../../components/relatorios/RelatorioAnalitico";
+import RelatorioConsolidado2 from "../../components/relatorios/RelatorioConsolidado2";
+import RelatorioAnalitico2 from "../../components/relatorios/RelatorioAnalitico2";
 
 const Relatorios = () => {
   const [selectedReport, setSelectedReport] = useState(null);
@@ -38,6 +40,8 @@ const Relatorios = () => {
     { nome: "Despesas Gerais", componente: <DespesasGerais /> },
     { nome: "Relatório Consolidado", componente: <RelatorioConsolidado /> },
     { nome: "Relatório Analitico", componente: <RelatorioAnalitico /> },
+    { nome: "Relatório Consolidado Previsto  e Realizado", componente: <RelatorioConsolidado2 /> },
+    { nome: "Relatório Analitico Previsto  e Realizado", componente: <RelatorioAnalitico2 /> },
   ];
 
   return (

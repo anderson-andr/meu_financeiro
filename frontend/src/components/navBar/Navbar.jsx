@@ -1,26 +1,62 @@
-import { useNavigate } from "react-router-dom";
-import './navbar.css'
-import Button from '@mui/material/Button';
+// src/components/Navbar.jsx
 
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import Button from '@mui/material/Button';
+import './navbar.css';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, logout } = React.useContext(AuthContext);
 
-  const navigate = useNavigate()
   return (
     <nav className="nav">
-      
-      
       <ul>
-        <li>
-          <Button variant="text" onClick={() => navigate("/")}>
-            Início
-          </Button>
-        </li>
-        <li><Button variant="text" onClick={() => navigate("/relatorios")}>Relatórios</Button></li>
-        <li><Button vvariant="text" onClick={() => navigate("/receitas")}>Receitas</Button></li>
-        <li><Button variant="text" onClick={() => navigate("/despesas")}>Despesas</Button></li>
+        {/* Links condicionais baseados no estado de autenticação */}
+        {isAuthenticated ? (
+          <>
+            {/* Links visíveis apenas para usuários autenticados */}
+            <li>
+              <Button variant="text" onClick={() => navigate("/home")}>
+                Início
+              </Button>
+            </li>
+            <li>
+              <Button variant="text" onClick={() => navigate("/relatorios")}>
+                Relatórios
+              </Button>
+            </li>
+            <li>
+              <Button variant="text" onClick={() => navigate("/receitas")}>
+                Receitas
+              </Button>
+            </li>
+            <li>
+              <Button variant="text" onClick={() => navigate("/despesas")}>
+                Despesas
+              </Button>
+            </li>
+            <li>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => {
+                  logout(); // Chama a função de logout do contexto
+                  navigate("/login"); // Redireciona para a página de login
+                }}
+              >
+                Sair
+              </Button>
+            </li>
+          </>
+        ) : (
+          <>
+            {/* Links visíveis apenas para usuários não autenticados */}
+           
+          </>
+        )}
       </ul>
-      
     </nav>
   );
 };

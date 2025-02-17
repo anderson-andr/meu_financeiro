@@ -1,0 +1,87 @@
+/* src/pages/login.css */
+
+/* Estilização geral do container */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh; /* Centraliza verticalmente */
+    background-color: #f0f4f8; /* Fundo claro */
+    padding: 20px;
+  }
+  
+  /* Título do formulário */
+  .login-container h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: #333333;
+    font-weight: normal;
+  }
+  
+  /* Estilização do formulário */
+  .login-container form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 400px; /* Largura máxima do formulário */
+    background: #ffffff; /* Fundo branco */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra leve */
+  }
+  
+  /* Estilização dos inputs */
+  .login-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #d1d5db; /* Borda cinza clara */
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease; /* Transição suave */
+  }
+  
+  .login-container input:focus {
+    border-color: #4a90e2; /* Destaque ao focar */
+    outline: none;
+  }
+  
+  /* Estilização do botão de login */
+  .login-container button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: #4a90e2; /* Azul suave */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Transição suave */
+  }
+  
+  .login-container button[type="submit"]:hover {
+    background-color: #357abd; /* Escurece o botão ao passar o mouse */
+  }
+  
+  /* Botão de registro */
+  .register-link {
+    margin-top: 15px;
+  }
+  
+  .register-link button {
+    background-color: transparent;
+    color: #4a90e2; /* Azul suave */
+    border: 1px solid #4a90e2;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .register-link button:hover {
+    background-color: #4a90e2;
+    color: white;
+  }
