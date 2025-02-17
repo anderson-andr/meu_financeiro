@@ -21,7 +21,6 @@ const Login = () => {
       // Salva o token e redireciona para o dashboard
       login(token);
       navigate('/home');
-      alert('Login realizado com sucesso!');
     } catch (error) {
       console.error('Erro ao fazer login:', error);
       alert('Credenciais inválidas');
