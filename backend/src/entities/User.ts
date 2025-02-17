@@ -34,4 +34,5 @@ export class User {
 export interface AuthUser {
     id: string;
     username: string;
+    userId: number; // Ad
   }

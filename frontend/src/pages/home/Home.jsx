@@ -143,7 +143,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#fff" }}
+            style={{ padding: "16px", height: "400px", background: "#fff",borderRadius: '8px' }}
           >
             <Typography
               variant="h6"
@@ -166,7 +166,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#fff" }}
+            style={{ padding: "16px", height: "400px", background: "#fff",borderRadius: '8px' }}
           >
             <Typography
               variant="h6"
@@ -189,7 +189,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#fff" }}
+            style={{ padding: "16px", height: "400px", background: "#fff",borderRadius: '8px' }}
           >
             <Typography
               variant="h6"
@@ -210,7 +210,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#fff" }}
+            style={{ padding: "16px", height: "400px", background: "#fff",borderRadius: '8px' }}
           >
             <Typography
               variant="h6"

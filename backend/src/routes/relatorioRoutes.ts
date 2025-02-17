@@ -1,8 +1,14 @@
 import { Router, Request, Response } from "express";
 import { RelatorioController } from "../controllers/RelatorioController";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 const router = Router();
 const relatorioController = new RelatorioController();
+
+
+
+// Aplica o middleware de autenticação para todas as rotas
+router.use(authMiddleware);
 
 // Rota para obter o relatório geral mensal com opção de filtro por status
 router.get("/relatorios/geral/:mes/:status?", (req: Request, res: Response) => {
