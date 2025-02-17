@@ -25,7 +25,7 @@ ChartJS.register(
 );
 
 const Home = () => {
-  const [mesReferencia, setMesReferencia] = useState("01-2025");
+  const [mesReferencia, setMesReferencia] = useState("03-2025");
   const [dataRelatorio, setDataRelatorio] = useState(null);
   const [error, setError] = useState("");
 
