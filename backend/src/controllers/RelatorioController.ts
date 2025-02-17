@@ -404,7 +404,7 @@ export class RelatorioController {
             res.status(200).json(reports);
         } catch (error) {
             console.error("Erro ao gerar relatório consolidado:", error);
-            res.status(500).json({ message: "Erro ao gerar relatório consolidado" });
+            res.status(500).json({ message: "Erro ao gerar relatório consolidado  " });
         }
     }
 }
