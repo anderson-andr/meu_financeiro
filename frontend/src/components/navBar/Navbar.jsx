@@ -39,7 +39,7 @@ const Navbar = () => {
             </li>
             <li>
               <Button
-                variant="contained"
+                variant="text"
                 color="error"
                 onClick={() => {
                   logout(); // Chama a função de logout do contexto
