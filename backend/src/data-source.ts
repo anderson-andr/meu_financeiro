@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { Receita } from "./entities/Receita";
 import { Despesa } from "./entities/Despesa";
 import { MesReferencia } from "./entities/MesReferencia";
+import { User } from "./entities/User";
 
 export const AppDataSource = new DataSource({
     type: "mariadb",
@@ -13,7 +14,7 @@ export const AppDataSource = new DataSource({
     database: "financeiro",
     synchronize: true,
     logging: false,
-    entities: [Receita, MesReferencia, Despesa],
+    entities: [Receita, MesReferencia, Despesa, User],
     migrations: [],
     subscribers: [],
 });

@@ -3,6 +3,7 @@ import axios from "axios";
 import { Box, Grid, Paper, TextField, Button, Typography } from "@mui/material";
 import { Doughnut, Bar } from "react-chartjs-2";
 import api from "../../services/api";
+import './home.css'
 import {
   Chart as ChartJS,
   ArcElement,
@@ -142,7 +143,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#f2f2f2" }}
+            style={{ padding: "16px", height: "400px", background: "#fff" }}
           >
             <Typography
               variant="h6"
@@ -165,7 +166,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#f2f2f2" }}
+            style={{ padding: "16px", height: "400px", background: "#fff" }}
           >
             <Typography
               variant="h6"
@@ -188,7 +189,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#f2f2f2" }}
+            style={{ padding: "16px", height: "400px", background: "#fff" }}
           >
             <Typography
               variant="h6"
@@ -209,7 +210,7 @@ const Home = () => {
         <Grid item xs={12} md={6}>
           <Paper
             elevation={3}
-            style={{ padding: "16px", height: "400px", background: "#f2f2f2" }}
+            style={{ padding: "16px", height: "400px", background: "#fff" }}
           >
             <Typography
               variant="h6"
@@ -220,28 +221,28 @@ const Home = () => {
             </Typography>
             {dataRelatorio ? (
               <div style={{ width: "70%", height: "300px", margin: "0 auto" }}>
-                <Typography style={{ padding: "10px", fontSize: "20px" }}>
+                <Typography className="resumo_texto">
                   💰 Receitas Previstas:{" "}
                   {dataRelatorio.totalReceitasPrevisto?.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </Typography>
-                <Typography style={{ padding: "10px", fontSize: "20px" }}>
+                <Typography className="resumo_texto">
                   ✅ Receitas Realizadas:{" "}
                   {dataRelatorio.totalReceitasRealizado?.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </Typography>
-                <Typography style={{ padding: "10px", fontSize: "20px" }}>
+                <Typography className="resumo_texto">
                   💳 Despesas Previstas:{" "}
                   {dataRelatorio.totalDespesasPrevisto?.toLocaleString("pt-BR", {
                     style: "currency",
                     currency: "BRL",
                   })}
                 </Typography>
-                <Typography style={{ padding: "10px", fontSize: "20px" }}>
+                <Typography className="resumo_texto">
                   ❌ Despesas Realizadas:{" "}
                   {dataRelatorio.totalDespesasRealizado?.toLocaleString("pt-BR", {
                     style: "currency",
@@ -269,7 +270,7 @@ const Home = () => {
         </Grid>
 
         {/* Campo para selecionar o mês */}
-        <Box mt={4} style={{ margin: "20px auto" }}>
+        <Box mt={4} className="filtro_atualizar">
           <Typography variant="subtitle1" gutterBottom>
             Selecione o Mês:
           </Typography>
@@ -284,7 +285,8 @@ const Home = () => {
             variant="contained"
             color="primary"
             onClick={fetchRelatorioGeral}
-            style={{ marginTop: "10px" }}
+            className="button_filtro"
+            
           >
             Atualizar Gráficos
           </Button>

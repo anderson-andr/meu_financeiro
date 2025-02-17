@@ -1,6 +1,7 @@
 // Receita.ts
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { MesReferencia } from "./MesReferencia";
+import { User } from "./User";
 
 export enum ReceitaStatus {
     PREVISTO = "previsto",
@@ -13,8 +14,10 @@ export class Receita {
     id!: number;
 
     @ManyToOne(() => MesReferencia)
-    mesReferencia!: MesReferencia; // Pode ser um ID ou um objeto
-
+    mesReferencia!: MesReferencia; 
+    
+    @ManyToOne(() => User)
+    user!: User; 
     @Column()
     descricao!: string;
     

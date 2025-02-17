@@ -1,6 +1,7 @@
 
 import app from "./app";
 import { AppDataSource } from "./data-source";
+import "reflect-metadata";
 
 AppDataSource.initialize().then(() => {
     console.log("Banco de dados conectado!");

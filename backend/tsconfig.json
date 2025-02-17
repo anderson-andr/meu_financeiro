@@ -1,12 +1,16 @@
 {
-    "compilerOptions": {
-      "target": "ES6",
-      "module": "commonjs",
-      "strict": true,
-      "esModuleInterop": true,
-      "outDir": "./dist",
-      "rootDir": "./src",
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true
-    }
-  }
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "outDir": "./dist",
+    "experimentalDecorators": true,        // Habilita o suporte a decoradores
+    "emitDecoratorMetadata": true         // Gera metadados necessários para o TypeORM
+  },
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"],  // Certifique-se de incluir a pasta de tipos
+  "exclude": ["node_modules"]
+}

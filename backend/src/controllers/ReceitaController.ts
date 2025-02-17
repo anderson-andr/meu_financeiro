@@ -1,29 +1,26 @@
+// src/controllers/ReceitaController.ts
 import { Request, Response } from "express";
-
-import {ReceitaService} from "../services/ReceitaService"
+import { ReceitaService } from "../services/ReceitaService";
 import { AppDataSource } from "../data-source";
 import { Receita } from "../entities/Receita";
 import { MesReferencia } from "../entities/MesReferencia";
+
 const receitaRepository = AppDataSource.getRepository(Receita);
 const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
-
 const receitaService = new ReceitaService(receitaRepository);
 
 export class ReceitaController {
-   
-    // Método para pegar todas as receitas com o mês de referência
-async getAll(req: Request, res: Response) {
+    // Método para pegar todas as receitas do usuário logado
+async getAll(req: any, res: Response) {
     try {
-        // Buscando todas as receitas com a relação de mesReferencia
-        const receitas = await AppDataSource.getRepository(Receita)
-            .createQueryBuilder("receita")
-            .leftJoinAndSelect("receita.mesReferencia", "mesReferencia") // Relaciona as receitas com mesReferencia
-            .getMany();
+        // Extraia o userId do objeto req.user
+        const { userId } = req.user; 
+        const receitas = await receitaService.getAllByUser(userId);
 
-        // Formatando as receitas para incluir o mês de referência no retorno
-        const receitasComMesReferencia = receitas.map(receita => ({
+        // Formata as receitas para incluir o mês de referência no retorno
+        const receitasComMesReferencia = receitas.map((receita) => ({
             ...receita,
-            mesReferencia: receita.mesReferencia ? receita.mesReferencia.referencia : null
+            mesReferencia: receita.mesReferencia ? receita.mesReferencia.referencia : null,
         }));
 
         res.json(receitasComMesReferencia);
@@ -32,46 +29,54 @@ async getAll(req: Request, res: Response) {
     }
 }
 
-    // Método para pegar uma receita por ID
-    async getById(req: Request, res: Response) {
+
+    // Método para pegar uma receita por ID (do usuário logado)
+    async getById(req: any, res: Response) {
         try {
+            const userId = req.userId; // Obtém o ID do usuário do token
             const { id } = req.params;
-            const receita = await receitaService.getById(Number(id)); // Converte para número
+
+            const receita = await receitaService.getById(Number(id), userId);
             if (!receita) {
-                return res.status(404).json({ message: "Receita não encontrada" });
+                return res.status(404).json({ message: "Receita não encontrada ou não pertence ao usuário" });
             }
+
             res.json(receita);
         } catch (error) {
             res.status(500).json({ message: "Erro ao buscar receita", error });
         }
     }
 
-    // Método para criar uma nova receita
-    async create(req: Request, res: Response) {
+    // Método para criar uma nova receita (associada ao usuário logado)
+    async create(req: any, res: Response) {
         try {
-            const { mesReferencia, descricao,categoria, status, valor, data } = req.body;
-            if (!mesReferencia || !descricao  || !categoria || !status|| !valor || !data) {
+            const userId = req.userId; // Obtém o ID do usuário do token
+            const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
+
+            if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
             }
 
-            // Buscar o mesReferencia usando a propriedade "referencia"
+            // Buscar ou criar a entidade MesReferencia
             let mesReferenciaEntity = await mesReferenciaRepository.findOne({
-                where: { referencia: mesReferencia }  // Verifica se o mês já existe
+                where: { referencia: mesReferencia },
             });
-
             if (!mesReferenciaEntity) {
                 mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-                await mesReferenciaRepository.save(mesReferenciaEntity);  // Salva o novo MesReferencia
+                await mesReferenciaRepository.save(mesReferenciaEntity);
             }
 
-            const receita = await receitaService.create({
-                descricao,
-                categoria,
-                status,
-                valor,
-                data,
-                mesReferencia: mesReferenciaEntity // Associa a entidade MesReferencia
-            });
+            const receita = await receitaService.create(
+                {
+                    descricao,
+                    categoria,
+                    status,
+                    valor,
+                    data,
+                    mesReferencia: mesReferenciaEntity,
+                },
+                userId
+            );
 
             res.status(201).json(receita);
         } catch (error) {
@@ -79,39 +84,38 @@ async getAll(req: Request, res: Response) {
         }
     }
 
-    // Método para atualizar uma receita existente
-    async update(req: Request, res: Response) {
+    // Método para atualizar uma receita existente (do usuário logado)
+    async update(req: any, res: Response) {
         try {
+            const userId = req.userId; // Obtém o ID do usuário do token
             const { id } = req.params;
-            const { mesReferencia, descricao,categoria,status, valor, data } = req.body;
+            const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
 
-            if (!mesReferencia || !descricao || !categoria || !status|| !valor || !data) {
+            if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
-            }
-
-            const receita = await receitaService.getById(Number(id)); // Converte para número
-            if (!receita) {
-                return res.status(404).json({ message: "Receita não encontrada" });
             }
 
             // Buscar ou criar a entidade MesReferencia
             let mesReferenciaEntity = await mesReferenciaRepository.findOne({
-                where: { referencia: mesReferencia }
+                where: { referencia: mesReferencia },
             });
-
             if (!mesReferenciaEntity) {
                 mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-                await mesReferenciaRepository.save(mesReferenciaEntity);  // Salva o novo MesReferencia
+                await mesReferenciaRepository.save(mesReferenciaEntity);
             }
 
-            const updatedReceita = await receitaService.update(Number(id), {
-                descricao,
-                categoria,
-                status,
-                valor,
-                data,
-                mesReferencia: mesReferenciaEntity
-            });
+            const updatedReceita = await receitaService.update(
+                Number(id),
+                {
+                    descricao,
+                    categoria,
+                    status,
+                    valor,
+                    data,
+                    mesReferencia: mesReferenciaEntity,
+                },
+                userId
+            );
 
             res.json(updatedReceita);
         } catch (error) {
@@ -119,16 +123,14 @@ async getAll(req: Request, res: Response) {
         }
     }
 
-    // Método para deletar uma receita
-    async delete(req: Request, res: Response) {
+    // Método para deletar uma receita (do usuário logado)
+    async delete(req: any, res: Response) {
         try {
+            const userId = req.userId; // Obtém o ID do usuário do token
             const { id } = req.params;
-            const receita = await receitaService.getById(Number(id)); // Converte para número
-            if (!receita) {
-                return res.status(404).json({ message: "Receita não encontrada" });
-            }
 
-            await receitaService.delete(Number(id));
+            await receitaService.delete(Number(id), userId);
+
             res.status(200).json({ message: "Receita deletada com sucesso" });
         } catch (error) {
             res.status(500).json({ message: "Erro ao deletar receita", error });

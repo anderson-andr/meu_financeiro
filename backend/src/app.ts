@@ -1,8 +1,10 @@
 import express from "express";
+import "reflect-metadata";
 import cors from "cors";
 import receitaRoutes from "./routes/receitaRoutes";
 import despesaRoutes from "./routes/despesaRoutes";
 import relatorioRoutes from "./routes/relatorioRoutes";
+import routes from "./routes/routes"
 
 const app = express();
 
@@ -16,7 +18,10 @@ app.use(
 // Middleware para processar JSON
 app.use(express.json());
 
+
+
 // Rotas da API com prefixo "/api"
+app.use("/api",routes)
 app.use("/api", receitaRoutes);
 app.use("/api", despesaRoutes);
 app.use("/api", relatorioRoutes);

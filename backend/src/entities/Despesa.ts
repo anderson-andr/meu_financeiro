@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { MesReferencia } from "./MesReferencia";
+import { User } from "./User";
 
 export enum DespesaStatus {
     PREVISTO = "previsto",
@@ -14,6 +15,9 @@ export class Despesa {
 
     @ManyToOne(() => MesReferencia)
     mesReferencia!: MesReferencia; // Pode ser um ID ou um objeto
+    
+    @ManyToOne(() => User)
+        user!: User; 
 
     @Column()
     descricao!: string;
