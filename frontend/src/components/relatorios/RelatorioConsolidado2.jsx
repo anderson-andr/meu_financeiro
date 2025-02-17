@@ -116,7 +116,7 @@ const RelatorioConsolidado2 = () => {
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" gutterBottom>
-        Relatório Consolidado Mensal  Previsto x Realizdo
+       Mensal  Previsto x Realizado
       </Typography>
 
       {/* Botão para gerar o PDF */}

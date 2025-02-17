@@ -257,7 +257,7 @@ const RelatorioAnalitico2 = () => {
                               <TableCell>Valor Previsto</TableCell>
                               <TableCell>Valor Realizado</TableCell>
                               <TableCell>Categoria</TableCell>
-                              <TableCell>Diferença</TableCell>
+                             
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -277,12 +277,6 @@ const RelatorioAnalitico2 = () => {
                                   })}
                                 </TableCell>
                                 <TableCell>{receita.categoria || "Sem categoria"}</TableCell>
-                                <TableCell>
-                                  {Number(receita.diferenca).toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                  })}
-                                </TableCell>
                               </TableRow>
                             ))}
                           </TableBody>
@@ -301,7 +295,7 @@ const RelatorioAnalitico2 = () => {
                                   <TableCell>Valor Previsto</TableCell>
                                   <TableCell>Valor Realizado</TableCell>
                                   <TableCell>Categoria</TableCell>
-                                  <TableCell>Diferença</TableCell>
+                                  
                                 </TableRow>
                               </TableHead>
                               <TableBody>
@@ -321,12 +315,6 @@ const RelatorioAnalitico2 = () => {
                                       })}
                                     </TableCell>
                                     <TableCell>{despesa.categoria || "Sem categoria"}</TableCell>
-                                    <TableCell>
-                                      {Number(despesa.diferenca).toLocaleString("pt-BR", {
-                                        style: "currency",
-                                        currency: "BRL",
-                                      })}
-                                    </TableCell>
                                   </TableRow>
                                 ))}
                               </TableBody>
