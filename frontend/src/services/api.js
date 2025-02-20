@@ -12,11 +12,19 @@ api.interceptors.request.use(
     const token = getToken(); // Recupera o token atualizado
     if (token) {
       // Adiciona o token ao cabeçalho Authorization
+<<<<<<< HEAD
       config.headers['Authorization'] = token;
+=======
+      config.headers['Authorization'] = `Bearer ${token}`;
+>>>>>>> e51419ce3a67a5efc2dbcb917e661ac3f19a8742
       console.log("Token adicionado ao cabeçalho:", config.headers['Authorization']);
     } else {
       console.warn("Nenhum token encontrado.");
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> e51419ce3a67a5efc2dbcb917e661ac3f19a8742
     return config;
   },
   (error) => {
@@ -73,7 +81,11 @@ export const updateAuthHeader = () => {
   const token = getToken();
   if (token) {
     // Atualiza o cabeçalho Authorization globalmente
+<<<<<<< HEAD
     api.defaults.headers['Authorization'] = token;
+=======
+    api.defaults.headers['Authorization'] = `Bearer ${token}`;
+>>>>>>> e51419ce3a67a5efc2dbcb917e661ac3f19a8742
     console.log("Token atualizado nas configurações globais do Axios.");
   } else {
     console.warn("Nenhum token disponível para atualização.");
