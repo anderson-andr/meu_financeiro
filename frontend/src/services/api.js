@@ -28,7 +28,7 @@ api.interceptors.request.use(
 // Função para buscar os dados do usuário autenticado
 export const fetchUserData = async () => {
   // Verificar se os dados do usuário já estão no localStorage
-  const storedUser = localStorage.getItem('userData');
+  const storedUser = sessionStorage.getItem('userData');
   if (storedUser) {
     console.log("Dados do usuário já encontrados no localStorage:", JSON.parse(storedUser));
     return JSON.parse(storedUser); // Retorna os dados do usuário do localStorage
@@ -41,7 +41,7 @@ export const fetchUserData = async () => {
 
     // Salva os dados do usuário no localStorage
     const userId = response.data.user.userId; 
-    localStorage.setItem('userData',userId);
+    sessionStorage.setItem('userData',userId);
     console.log("Dados do usuário salvos no localStorage:", userId);
 
     return response.data.user; // Retorna os dados do usuário
@@ -59,7 +59,7 @@ export const clearUserData = () => {
 
 // Função para obter os dados do usuário do localStorage
 export const getUserDataFromLocalStorage = () => {
-  const userData = localStorage.getItem('userData');
+  const userData = sessionStorage.getItem('userData');
   if (userData) {
     console.log("Dados do usuário recuperados do localStorage:", JSON.parse(userData));
     return JSON.parse(userData);
