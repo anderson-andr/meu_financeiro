@@ -1,5 +1,4 @@
 // src/components/Navbar.jsx
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -53,7 +52,6 @@ const Navbar = () => {
         ) : (
           <>
             {/* Links visíveis apenas para usuários não autenticados */}
-           
           </>
         )}
       </ul>

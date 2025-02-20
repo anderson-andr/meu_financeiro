@@ -4,6 +4,8 @@ import { MesReferencia } from "../entities/MesReferencia";
 import { Receita, ReceitaStatus } from "../entities/Receita";
 import { Despesa, DespesaStatus } from "../entities/Despesa";
 import { ReportService } from "../services/ReportService";
+import { AuthUser } from "../types";
+import { User } from "../entities/User";
 
 // Repositórios para acessar as entidades Receita e Despesa
 const receitaRepository = AppDataSource.getRepository(Receita);
@@ -262,77 +264,103 @@ export class RelatorioController {
         }
     }
 
-    // Método para gerar o relatório geral de receitas por mês (ajustado para o usuário logado)
-    async getRelatorioGeralReceitas(req: Request, res: Response) {
-        const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
-        const mes = req.params.mes;
-        const userId = req.user?.userId;
+ 
+ // Método para gerar o relatório geral de receitas por mês (ajustado para o usuário logado)
+ async getRelatorioGeralReceitas(req: Request, res: Response) {
+    const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
+    const mes = req.params.mes;
+    const userId = req.user?.userId; // Obtém o ID do usuário logado
 
-        try {
-            if (!userId) {
-                return res.status(401).json({ message: "Usuário não autenticado" });
-            }
+    console.log("Usuário logado:", req.user);
+    console.log("Mês de referência recebido:", mes);
 
-            const numericUserId = Number(userId);
-
-            const mesReferencia = await mesReferenciaRepository.findOne({
-                where: { referencia: mes },
-                relations: ["receitas", "receitas.user"],
-            });
-
-            if (!mesReferencia) {
-                return res.status(404).json({ message: "Mês de referência não encontrado" });
-            }
-
-            const receitasFiltradas = mesReferencia.receitas.filter((r) => r.user && r.user.id === numericUserId);
-
-            const totalReceitas = receitasFiltradas.reduce((acc, receita) => acc + Number(receita.valor), 0);
-
-            res.json({
-                mesReferencia: mesReferencia.referencia,
-                totalReceitas,
-                receitas: receitasFiltradas,
-            });
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao gerar relatório de receitas", error });
+    try {
+        // Verifica se o usuário está autenticado
+        if (!userId) {
+            return res.status(401).json({ message: "Usuário não autenticado" });
         }
-    }
 
-    // Método para gerar o relatório geral de despesas por mês (ajustado para o usuário logado)
-    async getRelatorioGeralDespesas(req: Request, res: Response) {
-        const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
-        const mes = req.params.mes;
-        const userId = req.user?.userId;
+        const numericUserId = Number(userId); // Converte o userId para número
 
-        try {
-            if (!userId) {
-                return res.status(401).json({ message: "Usuário não autenticado" });
-            }
+        // Busca o mês de referência com as receitas associadas
+        const mesReferencia = await mesReferenciaRepository.findOne({
+            where: { referencia: mes },
+            relations: ["receitas", "receitas.user"], // Inclui a relação com usuários
+        });
 
-            const numericUserId = Number(userId);
+        console.log("Mês de referência encontrado:", mesReferencia);
 
-            const mesReferencia = await mesReferenciaRepository.findOne({
-                where: { referencia: mes },
-                relations: ["despesas", "despesas.user"],
-            });
-
-            if (!mesReferencia) {
-                return res.status(404).json({ message: "Mês de referência não encontrado" });
-            }
-
-            const despesasFiltradas = mesReferencia.despesas.filter((d) => d.user && d.user.id === numericUserId);
-
-            const totalDespesas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valor), 0);
-
-            res.json({
-                mesReferencia: mesReferencia.referencia,
-                totalDespesas,
-                despesas: despesasFiltradas,
-            });
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao gerar relatório de despesas", error });
+        if (!mesReferencia) {
+            return res.status(404).json({ message: "Mês de referência não encontrado" });
         }
+
+        // Filtra as receitas pelo ID do usuário logado, garantindo que `receita.user` exista
+        const receitasFiltradas = mesReferencia.receitas.filter(
+            (receita) => receita.user && receita.user.id === numericUserId
+        );
+
+        console.log("Receitas filtradas:", receitasFiltradas);
+
+        // Calcula o total de receitas
+        const totalReceitas = receitasFiltradas.reduce(
+            (acc, receita) => acc + Number(receita.valor), 0
+        );
+
+        return res.json({
+            mesReferencia: mesReferencia.referencia,
+            totalReceitas,
+            receitas: receitasFiltradas.length > 0 ? receitasFiltradas : [], // Garante que não retorne `undefined`
+        });
+
+    } catch (error) {
+        console.error("Erro ao gerar relatório de receitas:", error, );
+        return res.status(500).json({ message: "Erro ao gerar relatório de receitas", error: error });
     }
+}
+
+    
+
+// Método para gerar o relatório geral de despesas por mês (ajustado para o usuário logado)
+async getRelatorioGeralDespesas(req: Request, res: Response) {
+    const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
+    const mes = req.params.mes;
+    const userId = req.user?.userId;  // Verifique se userId está sendo recuperado corretamente
+
+    try {
+        if (!userId) {
+            return res.status(401).json({ message: "Usuário não autenticado" });
+        }
+
+        const numericUserId = Number(userId);  // Garante que o userId seja um número
+
+        // Verifica se o userId é um número válido
+        if (isNaN(numericUserId)) {
+            return res.status(400).json({ message: "ID do usuário inválido" });
+        }
+
+        const mesReferencia = await mesReferenciaRepository.findOne({
+            where: { referencia: mes },
+            relations: ["despesas", "despesas.user"],
+        });
+
+        if (!mesReferencia) {
+            return res.status(404).json({ message: "Mês de referência não encontrado" });
+        }
+
+        const despesasFiltradas = mesReferencia.despesas.filter((d) => d.user && d.user.id === numericUserId);
+
+        const totalDespesas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valor), 0);
+
+        res.json({
+            mesReferencia: mesReferencia.referencia,
+            totalDespesas,
+            despesas: despesasFiltradas,
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Erro ao gerar relatório de despesas", error });
+    }
+}
+
 
     // Método para gerar o relatório analítico (ajustado para o usuário logado)
     async getRelatorioAnalitico(req: Request, res: Response) {

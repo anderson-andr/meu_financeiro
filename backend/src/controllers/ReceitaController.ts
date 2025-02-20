@@ -14,8 +14,9 @@ export class ReceitaController {
 async getAll(req: any, res: Response) {
     try {
         // Extraia o userId do objeto req.user
-        const { userId } = req.user; 
+        const userId = req.user.userId;
         const receitas = await receitaService.getAllByUser(userId);
+        console.log(userId)
 
         // Formata as receitas para incluir o mês de referência no retorno
         const receitasComMesReferencia = receitas.map((receita) => ({
@@ -49,9 +50,12 @@ async getAll(req: any, res: Response) {
 
     // Método para criar uma nova receita (associada ao usuário logado)
     async create(req: any, res: Response) {
+        console.log("Create", req.userId)
+
         try {
-            const userId = req.userId; // Obtém o ID do usuário do token
+            const userId = req.user.userId; // Obtém o ID do usuário do token
             const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
+            console.log("Create", userId)
 
             if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
@@ -87,7 +91,7 @@ async getAll(req: any, res: Response) {
     // Método para atualizar uma receita existente (do usuário logado)
     async update(req: any, res: Response) {
         try {
-            const userId = req.userId; // Obtém o ID do usuário do token
+            const userId = req.user.userId;// Obtém o ID do usuário do token
             const { id } = req.params;
             const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
 
@@ -126,7 +130,7 @@ async getAll(req: any, res: Response) {
     // Método para deletar uma receita (do usuário logado)
     async delete(req: any, res: Response) {
         try {
-            const userId = req.userId; // Obtém o ID do usuário do token
+            const userId = req.user.userId; // Obtém o ID do usuário do token
             const { id } = req.params;
 
             await receitaService.delete(Number(id), userId);

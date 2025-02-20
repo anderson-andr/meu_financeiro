@@ -25,6 +25,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     }
     
     req.user = decoded as AuthUser;
+  	console.log( 'mid',req.user )
     next();
   });
 };

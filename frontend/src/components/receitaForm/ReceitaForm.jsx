@@ -21,6 +21,8 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
   const [status, setStatus] = useState("previsto");
   const [mesReferencia, setMesReferencia] = useState("");
   const [data, setData] = useState("");
+  const [user, setUser] = useState("");
+ 
 
   // Função para resetar os campos do formulário
   const resetForm = () => {
@@ -34,6 +36,10 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
 
   // Preenche os campos com os dados da receita em edição ou limpa os campos
   useEffect(() => {
+    const storedUser = localStorage.getItem('userData');
+    setUser(storedUser); 
+    console.log(storedUser)
+
     if (open) {
       if (editingReceita) {
         setDescricao(editingReceita.descricao || "");
@@ -52,6 +58,7 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const novaReceita = {
+      user,
       descricao,
       valor,
       categoria,

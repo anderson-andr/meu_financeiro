@@ -32,7 +32,7 @@ export class User {
 
 
 export interface AuthUser {
-    id: string;
+    id: number;
     username: string;
     userId: number; // Ad
   }
