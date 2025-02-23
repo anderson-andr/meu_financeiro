@@ -24,21 +24,7 @@ const RelatorioGeral = () => {
 
   const fetchRelatorio = async () => {
 
-    useEffect(() => {
-      const loadUserData = async () => {
-        try {
-          console.log("Carregando dados do usuário..."); // Log para depuração
-          const userData = await fetchUserData();
-          setUser(userData);
-        } catch (error) {
-          console.error("Erro ao carregar dados do usuário:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      loadUserData();
-    }, []);
+
 
     if (!mes) {
       setError("Por favor, preencha o mês.");

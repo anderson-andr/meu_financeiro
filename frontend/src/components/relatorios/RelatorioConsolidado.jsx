@@ -83,11 +83,11 @@ const RelatorioConsolidado = () => {
         halign: "center",
       },
       columnStyles: {
-        0: { cellWidth: 40 }, // Largura da coluna "Mês de Referência"
-        1: { cellWidth: 30 }, // Largura da coluna "Saldo Inicial"
-        2: { cellWidth: 30 }, // Largura da coluna "Receitas Totais"
-        3: { cellWidth: 30 }, // Largura da coluna "Despesas Totais"
-        4: { cellWidth: 30 }, // Largura da coluna "Saldo Final"
+        0: { cellWidth: "auto" }, // Largura da coluna "Mês de Referência"
+        1: { cellWidth: "auto" }, // Largura da coluna "Saldo Inicial"
+        2: { cellWidth: "auto" }, // Largura da coluna "Receitas Totais"
+        3: { cellWidth: "auto" }, // Largura da coluna "Despesas Totais"
+        4: { cellWidth: "auto" }, // Largura da coluna "Saldo Final"
       },
     });
 

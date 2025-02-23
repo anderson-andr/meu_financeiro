@@ -94,13 +94,13 @@ const RelatorioConsolidado2 = () => {
         halign: "center",
       },
       columnStyles: {
-        0: { cellWidth: 30 }, // Largura da coluna "Mês de Referência"
-        1: { cellWidth: 30 }, // Largura da coluna "Saldo Inicial"
-        2: { cellWidth: 30 }, // Largura da coluna "Receitas Previstas"
-        3: { cellWidth: 30 }, // Largura da coluna "Receitas Realizadas"
-        4: { cellWidth: 30 }, // Largura da coluna "Despesas Previstas"
-        5: { cellWidth: 30 }, // Largura da coluna "Despesas Realizadas"
-        6: { cellWidth: 30 }, // Largura da coluna "Saldo Final"
+        0: { cellWidth: "auto" }, // Largura da coluna "Mês de Referência"
+        1: { cellWidth: "auto" }, // Largura da coluna "Saldo Inicial"
+        2: { cellWidth: "auto" }, // Largura da coluna "Receitas Previstas"
+        3: { cellWidth: "auto" }, // Largura da coluna "Receitas Realizadas"
+        4: { cellWidth: "auto" }, // Largura da coluna "Despesas Previstas"
+        5: { cellWidth: "auto" }, // Largura da coluna "Despesas Realizadas"
+        6: { cellWidth: "auto" }, // Largura da coluna "Saldo Final"
       },
     });
 
@@ -190,8 +190,8 @@ const RelatorioConsolidado2 = () => {
                 </TableCell>
                 <TableCell
                   style={{
-                    color: relatorio.saldoFinal < 0 ? "red" : "green",
-                    fontWeight: "bold",
+                      color: relatorio.saldoFinal < 0 ? "red" : "green",
+                      fontWeight: "bold",
                   }}
                 >
                   {Number(relatorio.saldoFinal).toLocaleString("pt-BR", {
