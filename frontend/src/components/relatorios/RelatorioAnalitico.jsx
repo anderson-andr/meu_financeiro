@@ -188,19 +188,19 @@ const RelatorioAnalitico = () => {
                   </TableCell>
                   <TableCell>{relatorio.mesReferencia}</TableCell>
                   <TableCell>
-                    {Number(relatorio.saldoInicial).toLocaleString("pt-BR", {
+                    {Number(relatorio.saldoInicial ?? 0).toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
                   </TableCell>
                   <TableCell>
-                    {Number(relatorio.receitasTotais).toLocaleString("pt-BR", {
+                    {Number(relatorio.receitasTotais ?? 0).toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
                   </TableCell>
                   <TableCell>
-                    {Number(relatorio.despesasTotais).toLocaleString("pt-BR", {
+                    {Number(relatorio.despesasTotais?? 0).toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
@@ -211,7 +211,7 @@ const RelatorioAnalitico = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {Number(relatorio.saldoFinal).toLocaleString("pt-BR", {
+                    {Number(relatorio.saldoFinal ?? 0).toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}

@@ -50,7 +50,7 @@ const Despesas = () => {
   const handleDespesaAdicionada = async (novaDespesa) => {
     if (editingDespesa) {
       // Se estiver editando, atualiza a despesa existente
-      await api.put( `$/despesas/${editingDespesa.id}`, novaDespesa);
+      await api.put( `/despesas/${editingDespesa.id}`, novaDespesa);
       setEditingDespesa(null); // Limpa o estado de edição
     } else {
       // Se não estiver editando, adiciona uma nova despesa
