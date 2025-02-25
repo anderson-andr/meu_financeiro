@@ -183,12 +183,12 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
     dataRelatorio.despesas.forEach((despesa) => {
       const categoria = despesa.categoria?.toUpperCase() || "SEM CATEGORIA";
       categoriasDespesas[categoria] =
-        (categoriasDespesas[categoria] || 0) + Number(despesa.valor);
+        (categoriasDespesas[categoria] || 0) + Number(despesa.valorPrevisto);
     });
 
     const sortedCategorias = Object.entries(categoriasDespesas)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+      .slice(0, 20);
 
     return {
       labels: sortedCategorias.map(([categoria]) => categoria),

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import DespesaForm from "../../components/despesaForm/DespesaForm"; 
+import DespesaForm from "../../components/despesaForm/DespesaForm";
 import api from "../../services/api";
 import {
   Table,
@@ -16,17 +16,23 @@ import {
   IconButton,
   Tooltip,
   Pagination,
+  TextField,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import './despesas.css';
+import "./despesas.css";
 
 const Despesas = () => {
   const [despesas, setDespesas] = useState([]);
-  const [openModal, setOpenModal] = useState(false); // Estado para controlar a visibilidade do modal
-  const [editingDespesa, setEditingDespesa] = useState(null); // Estado para controlar a edição
-  const [currentPage, setCurrentPage] = useState(1); // Estado para controlar a página atual
-  const rowsPerPage = 5; // Número de itens por página
+  const [filteredDespesas, setFilteredDespesas] = useState([]); // Estado para armazenar despesas filtradas
+  const [openModal, setOpenModal] = useState(false);
+  const [editingDespesa, setEditingDespesa] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 5;
+
+  // Estados para os filtros
+  const [mesReferenciaFilter, setMesReferenciaFilter] = useState("");
+  const [valorFilter, setValorFilter] = useState("");
 
   useEffect(() => {
     fetchDespesas();
@@ -35,12 +41,12 @@ const Despesas = () => {
   // Função para buscar despesas
   const fetchDespesas = async () => {
     try {
-      const response = await api.get( `/despesas`);
-      // Ordena as despesas pelo mês de referência (decrescente)
-      const sortedDespesas = response.data.sort((a, b) => {
-        return new Date(b.mesReferencia) - new Date(a.mesReferencia);
-      });
+      const response = await api.get(`/despesas`);
+      const sortedDespesas = response.data.sort(
+        (a, b) => new Date(b.mesReferencia) - new Date(a.mesReferencia)
+      );
       setDespesas(sortedDespesas);
+      setFilteredDespesas(sortedDespesas); // Inicialmente, todas as despesas são exibidas
     } catch (error) {
       console.error("Erro ao buscar despesas:", error);
     }
@@ -48,36 +54,60 @@ const Despesas = () => {
 
   // Função para adicionar ou editar uma despesa
   const handleDespesaAdicionada = async (novaDespesa) => {
-    if (editingDespesa) {
-      // Se estiver editando, atualiza a despesa existente
-      await api.put( `/despesas/${editingDespesa.id}`, novaDespesa);
-      setEditingDespesa(null); // Limpa o estado de edição
-    } else {
-      // Se não estiver editando, adiciona uma nova despesa
-      await api.post(`/despesas`, novaDespesa);
+    try {
+      if (editingDespesa) {
+        // Se estiver editando, atualiza a despesa existente
+        await api.put(`/despesas/${editingDespesa.id}`, novaDespesa);
+        setEditingDespesa(null);
+      } else {
+        // Se não estiver editando, adiciona uma nova despesa
+        await api.post(`/despesas`, novaDespesa);
+      }
+      fetchDespesas(); // Atualiza a lista de despesas
+    } catch (error) {
+      console.error("Erro ao adicionar/editar despesa:", error);
     }
-    fetchDespesas(); // Atualiza a lista de despesas
   };
 
   // Função para excluir uma despesa
   const handleDeleteDespesa = async (id) => {
     try {
-      await api.delete( `/despesas/${id}`);
+      await api.delete(`/despesas/${id}`);
       fetchDespesas(); // Atualiza a lista de despesas após a exclusão
     } catch (error) {
       console.error("Erro ao excluir despesa:", error);
     }
   };
 
+  // Função para aplicar os filtros
+  const applyFilters = () => {
+    let filtered = [...despesas];
+
+    // Filtro por mês de referência
+    if (mesReferenciaFilter) {
+      filtered = filtered.filter((despesa) =>
+        despesa.mesReferencia.includes(mesReferenciaFilter)
+      );
+    }
+
+    // Filtro por valor (previsto ou realizado)
+    if (valorFilter) {
+      const valor = parseFloat(valorFilter);
+      filtered = filtered.filter(
+        (despesa) =>
+          parseFloat(despesa.valorPrevisto) === valor ||
+          parseFloat(despesa.valorRealizado) === valor
+      );
+    }
+
+    setFilteredDespesas(filtered);
+    setCurrentPage(1); // Redefine a página atual após aplicar os filtros
+  };
+
   // Calcula os itens da página atual
   const indexOfLastItem = currentPage * rowsPerPage;
   const indexOfFirstItem = indexOfLastItem - rowsPerPage;
-  const currentItems = despesas.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Manipula a mudança de página
-  const handleChangePage = (event, newPage) => {
-    setCurrentPage(newPage);
-  };
+  const currentItems = filteredDespesas.slice(indexOfFirstItem, indexOfLastItem);
 
   return (
     <Box>
@@ -85,6 +115,37 @@ const Despesas = () => {
         <Typography className="despesas_texto" variant="h4" gutterBottom>
           Despesas
         </Typography>
+
+        {/* Filtros */}
+        <Box sx={{ display: "flex", gap: 2, marginBottom: 2 }}>
+          {/* Filtro por Mês de Referência */}
+          <TextField
+            label="Mês de Referência"
+            type="text"
+            value={mesReferenciaFilter}
+            onChange={(e) => setMesReferenciaFilter(e.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+
+          {/* Filtro por Valor */}
+          <TextField
+            label="Valor"
+            type="number"
+            value={valorFilter}
+            onChange={(e) => setValorFilter(e.target.value)}
+            InputProps={{
+              inputProps: { min: 0 },
+            }}
+          />
+
+          {/* Botão para aplicar os filtros */}
+          <Button variant="contained" color="primary" onClick={applyFilters}>
+            Aplicar Filtros
+          </Button>
+        </Box>
+
         {/* Tabela de Despesas */}
         <TableContainer component={Paper} sx={{ marginBottom: 2 }}>
           <Table>
@@ -109,10 +170,16 @@ const Despesas = () => {
                   <TableCell>{despesa.descricao}</TableCell>
                   <TableCell>{despesa.status}</TableCell>
                   <TableCell align="right">
-                    {Number(despesa.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    {Number(despesa.valorPrevisto).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
                   </TableCell>
                   <TableCell align="right">
-                    {Number(despesa.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    {Number(despesa.valorRealizado).toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
                   </TableCell>
                   <TableCell align="center">
                     {/* Botão de Editar */}
@@ -120,8 +187,8 @@ const Despesas = () => {
                       <IconButton
                         color="primary"
                         onClick={() => {
-                          setEditingDespesa(despesa); // Define a despesa em edição
-                          setOpenModal(true); // Abre o modal
+                          setEditingDespesa(despesa);
+                          setOpenModal(true);
                         }}
                       >
                         <EditIcon />
@@ -142,32 +209,35 @@ const Despesas = () => {
             </TableBody>
           </Table>
         </TableContainer>
+
         {/* Paginação */}
         <Pagination
-          count={Math.ceil(despesas.length / rowsPerPage)} // Número total de páginas
+          count={Math.ceil(filteredDespesas.length / rowsPerPage)}
           page={currentPage}
-          onChange={handleChangePage}
+          onChange={(event, newPage) => setCurrentPage(newPage)}
           color="primary"
           sx={{ display: "flex", justifyContent: "center", marginBottom: 2 }}
         />
+
         {/* Botão para abrir o modal */}
         <Button
           variant="contained"
           color="primary"
           onClick={() => {
-            setEditingDespesa(null); // Limpa o estado de edição
-            setOpenModal(true); // Abre o modal
+            setEditingDespesa(null);
+            setOpenModal(true);
           }}
           sx={{ marginBottom: 2 }}
         >
           Adicionar Despesa
         </Button>
+
         {/* Renderização condicional do modal */}
         <DespesaForm
           open={openModal}
-          onClose={() => setOpenModal(false)} // Fecha o modal
+          onClose={() => setOpenModal(false)}
           onDespesaAdicionada={handleDespesaAdicionada}
-          editingDespesa={editingDespesa} // Passa a despesa em edição
+          editingDespesa={editingDespesa}
         />
       </Box>
     </Box>
