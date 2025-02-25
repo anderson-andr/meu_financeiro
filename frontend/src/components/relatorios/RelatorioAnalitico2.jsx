@@ -65,7 +65,7 @@ const RelatorioAnalitico2 = () => {
       const tableHeaders = ["Saldo Inicial", "Receitas Totais", "Despesas Totais", "Saldo Final"];
       const tableData = [
         [
-          Number(relatorio.saldoInicial).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(relatorio.saldoInicial  || 0 ).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
           Number(
             relatorio.receitas.reduce((sum, r) => sum + r.valorRealizado, 0)
           ).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
@@ -127,8 +127,8 @@ const RelatorioAnalitico2 = () => {
         const despesasHeaders = ["Descrição", "Valor Previsto", "Valor Realizado", "Categoria", "Diferença"];
         const despesasData = relatorio.despesas.map((despesa) => [
           despesa.descricao,
-          Number(despesa.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-          Number(despesa.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(despesa.valorPrevisto  || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(despesa.valorRealizado  || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
           despesa.categoria || "Sem categoria",
           Number(despesa.diferenca).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         ]);

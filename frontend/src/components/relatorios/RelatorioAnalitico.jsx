@@ -66,10 +66,10 @@ const RelatorioAnalitico = () => {
       const tableHeaders = ["Saldo Inicial", "Receitas Totais", "Despesas Totais", "Saldo Final"];
       const tableData = [
         [
-          Number(relatorio.saldoInicial).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-          Number(relatorio.receitasTotais).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-          Number(relatorio.despesasTotais).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
-          Number(relatorio.saldoFinal).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(relatorio.saldoInicial  || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(relatorio.receitasTotais  || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(relatorio.despesasTotais  || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+          Number(relatorio.saldoFinal  || 0 ).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         ],
       ];
 

@@ -52,27 +52,27 @@ const RelatorioConsolidado2 = () => {
 
     const tableData = relatorios.map((relatorio) => [
       relatorio.mesReferencia,
-      Number(relatorio.saldoInicial).toLocaleString("pt-BR", {
+      Number(relatorio.saldoInicial  || 0 ).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }),
-      Number(relatorio.receitasTotaisPrevistas).toLocaleString("pt-BR", {
+      Number(relatorio.receitasTotaisPrevistas  || 0 ).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }),
-      Number(relatorio.receitasTotaisRealizadas).toLocaleString("pt-BR", {
+      Number(relatorio.receitasTotaisRealizadas  || 0).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }),
-      Number(relatorio.despesasTotaisPrevistas).toLocaleString("pt-BR", {
+      Number(relatorio.despesasTotaisPrevistas  || 0 ).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }),
-      Number(relatorio.despesasTotaisRealizadas).toLocaleString("pt-BR", {
+      Number(relatorio.despesasTotaisRealizadas  || 0 ).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }),
-      Number(relatorio.saldoFinal).toLocaleString("pt-BR", {
+      Number(relatorio.saldoFinal  || 0 ).toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL",
       }),

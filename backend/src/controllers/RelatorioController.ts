@@ -6,7 +6,7 @@ import { Despesa, DespesaStatus } from "../entities/Despesa";
 import { ReportService } from "../services/ReportService";
 import { AuthUser } from "../types";
 import { User } from "../entities/User";
-
+import { LessThan } from "typeorm";
 // Repositórios para acessar as entidades Receita e Despesa
 const receitaRepository = AppDataSource.getRepository(Receita);
 const despesaRepository = AppDataSource.getRepository(Despesa);
@@ -18,7 +18,7 @@ export class RelatorioController {
     // Método para gerar o relatório geral mensal (ajustado para o usuário logado)
     async getRelatorioMensal(req: Request, res: Response) {
         const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
-        const mes = req.params.mes;
+        const mes = req.params.mes; // Mês de referência
         const status = req.params.status; // Pode ser "previsto" ou "realizado"
         const userId = req.user?.userId; // Obtém o ID do usuário logado
 
@@ -56,30 +56,56 @@ export class RelatorioController {
             console.log("Calculando totais previstos e realizados...");
             const totalReceitasPrevisto = receitasFiltradas
                 .filter((r) => r.status === "previsto")
-                .reduce((acc, r) => acc + Number(r.valorPrevisto), 0);
+                .reduce((acc, r) => acc + Number(r.valorPrevisto || 0), 0);
 
             const totalDespesasPrevisto = despesasFiltradas
                 .filter((d) => d.status === "previsto")
-                .reduce((acc, d) => acc + Number(d.valorPrevisto), 0);
+                .reduce((acc, d) => acc + Number(d.valorPrevisto || 0), 0);
 
             const totalReceitasRealizado = receitasFiltradas
                 .filter((r) => r.status === "realizado")
-                .reduce((acc, r) => acc + Number(r.valorRealizado), 0);
+                .reduce((acc, r) => acc + Number(r.valorRealizado || 0), 0);
 
             const totalDespesasRealizado = despesasFiltradas
                 .filter((d) => d.status === "realizado")
-                .reduce((acc, d) => acc + Number(d.valorRealizado), 0);
+                .reduce((acc, d) => acc + Number(d.valorRealizado || 0), 0);
 
-            const saldo = totalReceitasRealizado - totalDespesasRealizado;
+            // Buscar o saldo acumulado até o mês anterior
+            const mesesAnteriores = await mesReferenciaRepository.find({
+                where: { referencia: LessThan(mes) }, // Meses anteriores ao mês de referência
+                order: { referencia: "ASC" },
+                relations: ["receitas", "despesas", "receitas.user", "despesas.user"],
+            });
+
+            let saldoInicial = 0;
+            for (const mesAnterior of mesesAnteriores) {
+                const receitasAnteriores = mesAnterior.receitas.filter((r) => r.user && r.user.id === numericUserId);
+                const despesasAnteriores = mesAnterior.despesas.filter((d) => d.user && d.user.id === numericUserId);
+
+                const receitasRealizadasAnteriores = receitasAnteriores
+                    .filter((r) => r.status === "realizado")
+                    .reduce((acc, r) => acc + Number(r.valorRealizado || 0), 0);
+
+                const despesasRealizadasAnteriores = despesasAnteriores
+                    .filter((d) => d.status === "realizado")
+                    .reduce((acc, d) => acc + Number(d.valorRealizado || 0), 0);
+
+                saldoInicial += receitasRealizadasAnteriores - despesasRealizadasAnteriores;
+            }
+
+            // Calcular o saldo final do mês atual
+            const saldoFinal = saldoInicial + totalReceitasRealizado - totalDespesasRealizado;
 
             console.log("Retornando relatório formatado...");
             res.json({
                 mesReferencia: mesReferencia.referencia,
+                saldoInicial,
+                saldoFinal,
                 totalReceitasPrevisto,
                 totalDespesasPrevisto,
                 totalReceitasRealizado,
                 totalDespesasRealizado,
-                saldo,
+                saldoAtual: saldoFinal, // Saldo final também pode ser chamado de saldoAtual
                 receitas: receitasPorStatus,
                 despesas: despesasPorStatus,
             });

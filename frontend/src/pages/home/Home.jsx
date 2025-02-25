@@ -53,6 +53,7 @@ const Home = () => {
 
   const getTotalPrevistoRealizado = () => {
     if (!dataRelatorio) return null;
+    console.log(dataRelatorio)
   
     // Determinar se o saldo inicial deve ser somado às receitas ou despesas
     const saldoInicial = dataRelatorio.saldoInicial || 0;
@@ -85,6 +86,7 @@ const Home = () => {
 const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
   // Verifica se dataRelatorio existe
   if (!dataRelatorio) return null;
+  console.log("Data Relatorios",dataRelatorio )
 
   // Determina o saldo inicial e calcula os totais
   const saldoInicial = dataRelatorio.saldoInicial || 0;
