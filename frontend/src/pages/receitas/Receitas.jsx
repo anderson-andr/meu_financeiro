@@ -98,7 +98,8 @@ const Receitas = () => {
                 <TableCell>Categoria</TableCell>
                 <TableCell>Descrição</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell align="right">Valor (R$)</TableCell>
+                <TableCell align="right">Valor Previsto(R$)</TableCell>
+                <TableCell align="right">Valor Realizado(R$)</TableCell>
                 <TableCell align="center">Ações</TableCell>
               </TableRow>
             </TableHead>
@@ -111,7 +112,10 @@ const Receitas = () => {
                   <TableCell>{receita.descricao}</TableCell>
                   <TableCell>{receita.status}</TableCell>
                   <TableCell align="right">
-                    {Number(receita.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    {Number(receita.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </TableCell>
+                  <TableCell align="right">
+                    {Number(receita.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </TableCell>
                   <TableCell align="center">
                     {/* Botão de Editar */}

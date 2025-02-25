@@ -32,8 +32,11 @@ export class Receita {
     })
     status!: ReceitaStatus;
 
-    @Column("decimal")
-    valor!: number;
+    @Column("decimal", { nullable: true })
+    valorPrevisto!: number;
+
+    @Column("decimal", { nullable: true })
+    valorRealizado!: number;
 
     @Column("date")
     data!: string;

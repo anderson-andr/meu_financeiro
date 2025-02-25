@@ -95,7 +95,8 @@ const Despesas = () => {
                 <TableCell>Categoria</TableCell>
                 <TableCell>Descrição</TableCell>
                 <TableCell>Status</TableCell>
-                <TableCell align="right">Valor (R$)</TableCell>
+                <TableCell align="right">Valor Previsto(R$)</TableCell>
+                <TableCell align="right">Valor Realizado(R$)</TableCell>
                 <TableCell align="center">Ações</TableCell>
               </TableRow>
             </TableHead>
@@ -108,7 +109,10 @@ const Despesas = () => {
                   <TableCell>{despesa.descricao}</TableCell>
                   <TableCell>{despesa.status}</TableCell>
                   <TableCell align="right">
-                    {Number(despesa.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                    {Number(despesa.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                  </TableCell>
+                  <TableCell align="right">
+                    {Number(despesa.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
                   </TableCell>
                   <TableCell align="center">
                     {/* Botão de Editar */}

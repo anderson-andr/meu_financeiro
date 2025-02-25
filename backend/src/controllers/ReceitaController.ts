@@ -54,10 +54,10 @@ async getAll(req: any, res: Response) {
 
         try {
             const userId = req.user.userId; // Obtém o ID do usuário do token
-            const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
+            const { mesReferencia, descricao, categoria, status, valorPrevisto,valorRealizado, data } = req.body;
             console.log("Create", userId)
 
-            if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
+            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
             }
 
@@ -75,7 +75,8 @@ async getAll(req: any, res: Response) {
                     descricao,
                     categoria,
                     status,
-                    valor,
+                    valorPrevisto,
+                    valorRealizado,
                     data,
                     mesReferencia: mesReferenciaEntity,
                 },
@@ -93,9 +94,9 @@ async getAll(req: any, res: Response) {
         try {
             const userId = req.user.userId;// Obtém o ID do usuário do token
             const { id } = req.params;
-            const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
+            const { mesReferencia, descricao, categoria, status, valorPrevisto,valorRealizado,data } = req.body;
 
-            if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
+            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado|| !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
             }
 
@@ -114,7 +115,8 @@ async getAll(req: any, res: Response) {
                     descricao,
                     categoria,
                     status,
-                    valor,
+                    valorPrevisto,
+                    valorRealizado,
                     data,
                     mesReferencia: mesReferenciaEntity,
                 },

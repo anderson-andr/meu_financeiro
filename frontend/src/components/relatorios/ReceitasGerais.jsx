@@ -64,7 +64,8 @@ const ReceitasGerais = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Descrição</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">ValorPrevisto(R$)</TableCell>
+                  <TableCell align="right">ValorRealizado(R$)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -72,7 +73,10 @@ const ReceitasGerais = () => {
                   <TableRow key={idx}>
                     <TableCell>{receita.descricao}</TableCell>
                     <TableCell align="right">
-                      R$ {parseFloat(receita.valor).toFixed(2)}
+                      R$ {parseFloat(receita.valorPrevisto).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      R$ {parseFloat(receita.valorRealizado).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}

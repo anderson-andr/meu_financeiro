@@ -17,7 +17,8 @@ import {
 const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => {
   const [descricao, setDescricao] = useState("");
   const [categoria, setCategoria] = useState("");
-  const [valor, setValor] = useState("");
+  const [valorPrevisto, setValorPrevisto] = useState("");
+  const [valorRealizado, setValorRealizado] = useState("");
   const [status, setStatus] = useState("previsto");
   const [mesReferencia, setMesReferencia] = useState("");
   const [data, setData] = useState("");
@@ -28,7 +29,8 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
   const resetForm = () => {
     setDescricao("");
     setCategoria("");
-    setValor("");
+    setValorPrevisto("");
+    setValorRealizado("");
     setStatus("previsto");
     setMesReferencia("");
     setData("");
@@ -44,7 +46,8 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
       if (editingReceita) {
         setDescricao(editingReceita.descricao || "");
         setCategoria(editingReceita.categoria || "");
-        setValor(editingReceita.valor || "");
+        setValorPrevisto(editingReceita.valorPrevisto || "");
+        setValorRealizado(editingReceita.valorRealizado || "");
         setStatus(editingReceita.status || "previsto");
         setMesReferencia(editingReceita.mesReferencia || "");
         setData(editingReceita.data || "");
@@ -60,7 +63,8 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
     const novaReceita = {
       user,
       descricao,
-      valor,
+      valorPrevisto,
+      valorRealizado,
       categoria,
       status,
       mesReferencia,
@@ -115,8 +119,16 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
           <TextField
             label="Valor"
             type="number"
-            value={valor}
-            onChange={(e) => setValor(e.target.value)}
+            value={valorPrevisto}
+            onChange={(e) => setValorPrevisto(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Valor"
+            type="number"
+            value={valorRealizado}
+            onChange={(e) => setValorRealizado(e.target.value)}
             fullWidth
             margin="normal"
           />

@@ -92,10 +92,11 @@ const RelatorioAnalitico = () => {
       doc.text("Receitas", 14, startY);
       startY += 5;
 
-      const receitasHeaders = ["Descrição", "Valor", "Categoria", "Status"];
+      const receitasHeaders = ["Descrição", "Valor Previsto", "Valor Realizado","Categoria", "Status"];
       const receitasData = relatorio.receitas.map((receita) => [
         receita.descricao,
-        Number(receita.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+        Number(receita.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+        Number(receita.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         receita.categoria || "Sem categoria",
         receita.status,
       ]);
@@ -119,10 +120,11 @@ const RelatorioAnalitico = () => {
       doc.text("Despesas", 14, startY);
       startY += 5;
 
-      const despesasHeaders = ["Descrição", "Valor", "Categoria", "Status"];
+      const despesasHeaders = ["Descrição", "Valor Previsto","Valor Realizado", "Categoria", "Status"];
       const despesasData = relatorio.despesas.map((despesa) => [
         despesa.descricao,
-        Number(despesa.valor).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+        Number(despesa.valorPrevisto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
+        Number(despesa.valorRealizado).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }),
         despesa.categoria || "Sem categoria",
         despesa.status,
       ]);
@@ -233,7 +235,8 @@ const RelatorioAnalitico = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell>Descrição</TableCell>
-                              <TableCell>Valor</TableCell>
+                              <TableCell>Valor Previsto</TableCell>
+                              <TableCell>Valor Realizado</TableCell>
                               <TableCell>Categoria</TableCell>
                               <TableCell>Status</TableCell>
                             </TableRow>
@@ -243,7 +246,13 @@ const RelatorioAnalitico = () => {
                               <TableRow key={idx}>
                                 <TableCell>{receita.descricao}</TableCell>
                                 <TableCell>
-                                  {Number(receita.valor).toLocaleString("pt-BR", {
+                                  {Number(receita.valorPrevisto).toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </TableCell>
+                                <TableCell>
+                                  {Number(receita.valorRealizado).toLocaleString("pt-BR", {
                                     style: "currency",
                                     currency: "BRL",
                                   })}
@@ -263,7 +272,8 @@ const RelatorioAnalitico = () => {
                           <TableHead>
                             <TableRow>
                               <TableCell>Descrição</TableCell>
-                              <TableCell>Valor</TableCell>
+                              <TableCell>Valor Previsto</TableCell>
+                              <TableCell>Valor Realizado</TableCell>
                               <TableCell>Categoria</TableCell>
                               <TableCell>Status</TableCell>
                             </TableRow>
@@ -273,7 +283,13 @@ const RelatorioAnalitico = () => {
                               <TableRow key={idx}>
                                 <TableCell>{despesa.descricao}</TableCell>
                                 <TableCell>
-                                  {Number(despesa.valor).toLocaleString("pt-BR", {
+                                  {Number(despesa.valorPrevisto).toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                  })}
+                                </TableCell>
+                                <TableCell>
+                                  {Number(despesa.valorRealizado).toLocaleString("pt-BR", {
                                     style: "currency",
                                     currency: "BRL",
                                   })}

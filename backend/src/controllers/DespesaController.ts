@@ -61,10 +61,10 @@ async getAll(req: any, res: Response, user: AuthUser) {
             const userId = user.userId;  // Pega o ID do usuário do token
             console.log("ID do usuário autenticado:", userId);   // Verificação no console
     
-            const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
+            const { mesReferencia, descricao, categoria, status,  valorPrevisto,valorRealizado, data } = req.body;
     
             // Verificação de campos obrigatórios
-            if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
+            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
             }
     
@@ -83,7 +83,8 @@ async getAll(req: any, res: Response, user: AuthUser) {
                     descricao,
                     categoria,
                     status,
-                    valor,
+                    valorPrevisto,
+                    valorRealizado,
                     data,
                     mesReferencia: mesReferenciaEntity,
                 },
@@ -105,9 +106,9 @@ async getAll(req: any, res: Response, user: AuthUser) {
             const { id } = req.params;
             const userId = user.userId // Pegue apenas o ID
             console.log("ID do usuário autenticado:", userId);  
-            const { mesReferencia, descricao, categoria, status, valor, data } = req.body;
+            const { mesReferencia, descricao, categoria, status, valorPrevisto,valorRealizado, data } = req.body;
 
-            if (!mesReferencia || !descricao || !categoria || !status || !valor || !data) {
+            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
                 return res.status(400).json({ message: "Todos os campos são obrigatórios" });
             }
 
@@ -126,7 +127,8 @@ async getAll(req: any, res: Response, user: AuthUser) {
                     descricao,
                     categoria,
                     status,
-                    valor,
+                    valorPrevisto,
+                    valorRealizado,
                     data,
                     mesReferencia: mesReferenciaEntity,
                 },

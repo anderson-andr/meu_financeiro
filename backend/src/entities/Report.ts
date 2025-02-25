@@ -3,11 +3,13 @@ import { Receita } from "./Receita";
 
 // Report.ts
 export interface MonthlyReport {
-    mesReferencia: string; // Mês de referência (MM-YYYY)
-    saldoInicial: number;  // Saldo inicial do mês
-    receitasTotais: number; // Total de receitas no mês
-    despesasTotais: number; // Total de despesas no mês
-    saldoFinal: number;     // Saldo final do mês
+  mesReferencia: string;
+  saldoInicial: number;
+  receitasTotaisPrevistas: number;
+  receitasTotaisRealizadas: number;
+  despesasTotaisPrevistas: number;
+  despesasTotaisRealizadas: number;
+  saldoFinal: number; // Adicione esta linha   // Saldo final do mês
 }
 
 export interface MonthlyReport2 {
@@ -21,6 +23,10 @@ export interface MonthlyReport2 {
 }
 
 export interface AnalyticalMonthlyReport {
+    receitasTotaisPrevistas: number;
+    receitasTotaisRealizadas: number;
+    despesasTotaisPrevistas: number;
+    despesasTotaisRealizadas: number;
     mesReferencia: string;
     saldoInicial: number;
     saldoFinal: number;

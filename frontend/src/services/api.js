@@ -1,9 +1,15 @@
 import axios from 'axios';
 import { getToken } from '../utils/auth';
 
+
+const baseProd = 'https://api.minhas-financias.online/api';
+const baseDev = 'http://localhost:3000/api';
+
 // Criação da instância do Axios
 const api = axios.create({
-  baseURL: 'https://api.minhas-financias.online/api', // Substitua pela URL do seu back-end
+
+
+  baseURL:baseProd , // Substitua pela URL do seu back-end
 });
 
 // Interceptador para adicionar o token nas requisições

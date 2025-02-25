@@ -56,19 +56,19 @@ export class RelatorioController {
             console.log("Calculando totais previstos e realizados...");
             const totalReceitasPrevisto = receitasFiltradas
                 .filter((r) => r.status === "previsto")
-                .reduce((acc, r) => acc + Number(r.valor), 0);
+                .reduce((acc, r) => acc + Number(r.valorPrevisto), 0);
 
             const totalDespesasPrevisto = despesasFiltradas
                 .filter((d) => d.status === "previsto")
-                .reduce((acc, d) => acc + Number(d.valor), 0);
+                .reduce((acc, d) => acc + Number(d.valorPrevisto), 0);
 
             const totalReceitasRealizado = receitasFiltradas
                 .filter((r) => r.status === "realizado")
-                .reduce((acc, r) => acc + Number(r.valor), 0);
+                .reduce((acc, r) => acc + Number(r.valorRealizado), 0);
 
             const totalDespesasRealizado = despesasFiltradas
                 .filter((d) => d.status === "realizado")
-                .reduce((acc, d) => acc + Number(d.valor), 0);
+                .reduce((acc, d) => acc + Number(d.valorRealizado), 0);
 
             const saldo = totalReceitasRealizado - totalDespesasRealizado;
 
@@ -89,100 +89,140 @@ export class RelatorioController {
         }
     }
 
-    // Método para gerar o relatório mensal por categoria (ajustado para o usuário logado)
-    async getRelatorioMensalPorCategoria(req: Request, res: Response) {
-        const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
-        const mes = req.params.mes;
-        const userId = req.user?.userId;
+  // Método para gerar o relatório mensal por categoria (ajustado para o usuário logado)
+async getRelatorioMensalPorCategoria(req: Request, res: Response) {
+    const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
+    const mes = req.params.mes;
+    const userId = req.user?.userId;
 
-        try {
-            if (!userId) {
-                return res.status(401).json({ message: "Usuário não autenticado" });
-            }
+    try {
+        if (!userId) {
+            return res.status(401).json({ message: "Usuário não autenticado" });
+        }
 
-            const numericUserId = Number(userId);
+        const numericUserId = Number(userId);
 
-            const mesReferencia = await mesReferenciaRepository.findOne({
-                where: { referencia: mes },
-                relations: ["receitas", "despesas", "receitas.user", "despesas.user"],
-            });
+        const mesReferencia = await mesReferenciaRepository.findOne({
+            where: { referencia: mes },
+            relations: ["receitas", "despesas", "receitas.user", "despesas.user"],
+        });
 
-            if (!mesReferencia) {
-                return res.status(404).json({ message: "Mês de referência não encontrado" });
-            }
+        if (!mesReferencia) {
+            return res.status(404).json({ message: "Mês de referência não encontrado" });
+        }
 
-            const receitasFiltradas = mesReferencia.receitas.filter((r) => r.user && r.user.id === numericUserId);
-            const despesasFiltradas = mesReferencia.despesas.filter((d) => d.user && d.user.id === numericUserId);
+        // Filtra receitas e despesas pelo usuário logado
+        const receitasFiltradas = mesReferencia.receitas.filter((r) => r.user && r.user.id === numericUserId);
+        const despesasFiltradas = mesReferencia.despesas.filter((d) => d.user && d.user.id === numericUserId);
 
-            const receitasPorCategoria = receitasFiltradas.reduce((acc, receita) => {
+        // Calcula totais previstos e realizados para receitas por categoria
+        const receitasPorCategoria = receitasFiltradas.reduce(
+            (acc, receita) => {
                 const categoria = receita.categoria || "Sem categoria";
-                acc[categoria] = (acc[categoria] || 0) + Number(receita.valor);
+                acc[categoria] = acc[categoria] || { previsto: 0, realizado: 0 };
+                acc[categoria].previsto += Number(receita.valorPrevisto || 0);
+                acc[categoria].realizado += Number(receita.valorRealizado || 0);
                 return acc;
-            }, {} as Record<string, number>);
+            },
+            {} as Record<string, { previsto: number; realizado: number }>
+        );
 
-            const despesasPorCategoria = despesasFiltradas.reduce((acc, despesa) => {
+        // Calcula totais previstos e realizados para despesas por categoria
+        const despesasPorCategoria = despesasFiltradas.reduce(
+            (acc, despesa) => {
                 const categoria = despesa.categoria || "Sem categoria";
-                acc[categoria] = (acc[categoria] || 0) + Number(despesa.valor);
+                acc[categoria] = acc[categoria] || { previsto: 0, realizado: 0 };
+                acc[categoria].previsto += Number(despesa.valorPrevisto || 0);
+                acc[categoria].realizado += Number(despesa.valorRealizado || 0);
                 return acc;
-            }, {} as Record<string, number>);
+            },
+            {} as Record<string, { previsto: number; realizado: number }>
+        );
 
-            res.json({
-                mesReferencia: mesReferencia.referencia,
-                receitasPorCategoria,
-                despesasPorCategoria,
-            });
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao gerar relatório por categoria", error });
-        }
+        // Retorna o relatório formatado
+        res.json({
+            mesReferencia: mesReferencia.referencia,
+            receitasPorCategoria,
+            despesasPorCategoria,
+        });
+    } catch (error) {
+        console.error("Erro ao gerar relatório por categoria:", error);
+        res.status(500).json({ message: "Erro ao gerar relatório por categoria", error });
     }
+}
 
-    // Método para gerar o relatório filtrado por mês e categoria (ajustado para o usuário logado)
-    async getRelatorioPorMesECategoria(req: Request, res: Response) {
-        const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
-        const mes = req.params.mes;
-        const categoria = req.params.categoria;
-        const userId = req.user?.userId;
+    
+  // Método para gerar o relatório filtrado por mês e categoria (ajustado para o usuário logado)
+async getRelatorioPorMesECategoria(req: Request, res: Response) {
+    const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
+    const mes = req.params.mes;
+    const categoria = req.params.categoria;
+    const userId = req.user?.userId;
 
-        try {
-            if (!userId) {
-                return res.status(401).json({ message: "Usuário não autenticado" });
-            }
-
-            const numericUserId = Number(userId);
-
-            const mesReferencia = await mesReferenciaRepository.findOne({
-                where: { referencia: mes },
-                relations: ["receitas", "despesas", "receitas.user", "despesas.user"],
-            });
-
-            if (!mesReferencia) {
-                return res.status(404).json({ message: "Mês de referência não encontrado" });
-            }
-
-            const receitasFiltradas = mesReferencia.receitas.filter(
-                (r) => r.user && r.user.id === numericUserId && r.categoria === categoria
-            );
-            const despesasFiltradas = mesReferencia.despesas.filter(
-                (d) => d.user && d.user.id === numericUserId && d.categoria === categoria
-            );
-
-            const totalReceitas = receitasFiltradas.reduce((acc, receita) => acc + Number(receita.valor), 0);
-            const totalDespesas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valor), 0);
-            const saldo = totalReceitas - totalDespesas;
-
-            res.json({
-                mesReferencia: mesReferencia.referencia,
-                categoria,
-                totalReceitas,
-                totalDespesas,
-                saldo,
-                receitas: receitasFiltradas,
-                despesas: despesasFiltradas,
-            });
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao gerar relatório por mês e categoria", error });
+    try {
+        if (!userId) {
+            return res.status(401).json({ message: "Usuário não autenticado" });
         }
+
+        const numericUserId = Number(userId);
+
+        const mesReferencia = await mesReferenciaRepository.findOne({
+            where: { referencia: mes },
+            relations: ["receitas", "despesas", "receitas.user", "despesas.user"],
+        });
+
+        if (!mesReferencia) {
+            return res.status(404).json({ message: "Mês de referência não encontrado" });
+        }
+
+        // Filtra receitas e despesas pelo usuário logado e pela categoria
+        const receitasFiltradas = mesReferencia.receitas.filter(
+            (r) => r.user && r.user.id === numericUserId && r.categoria === categoria
+        );
+        const despesasFiltradas = mesReferencia.despesas.filter(
+            (d) => d.user && d.user.id === numericUserId && d.categoria === categoria
+        );
+
+        // Calcula totais previstos e realizados para receitas
+        const totalReceitasPrevisto = receitasFiltradas.reduce(
+            (acc, receita) => acc + Number(receita.valorPrevisto || 0),
+            0
+        );
+        const totalReceitasRealizado = receitasFiltradas.reduce(
+            (acc, receita) => acc + Number(receita.valorRealizado || 0),
+            0
+        );
+
+        // Calcula totais previstos e realizados para despesas
+        const totalDespesasPrevisto = despesasFiltradas.reduce(
+            (acc, despesa) => acc + Number(despesa.valorPrevisto || 0),
+            0
+        );
+        const totalDespesasRealizado = despesasFiltradas.reduce(
+            (acc, despesa) => acc + Number(despesa.valorRealizado || 0),
+            0
+        );
+
+        // Calcula o saldo com base nos valores realizados
+        const saldo = totalReceitasRealizado - totalDespesasRealizado;
+
+        // Retorna o relatório formatado
+        res.json({
+            mesReferencia: mesReferencia.referencia,
+            categoria,
+            totalReceitasPrevisto,
+            totalReceitasRealizado,
+            totalDespesasPrevisto,
+            totalDespesasRealizado,
+            saldo,
+            receitas: receitasFiltradas,
+            despesas: despesasFiltradas,
+        });
+    } catch (error) {
+        console.error("Erro ao gerar relatório por mês e categoria:", error);
+        res.status(500).json({ message: "Erro ao gerar relatório por mês e categoria", error });
     }
+}
 
     // Método para gerar o relatório de receitas por categoria e mês (ajustado para o usuário logado)
     async getRelatorioReceitasPorCategoria(req: Request, res: Response) {
@@ -211,12 +251,14 @@ export class RelatorioController {
                 (r) => r.user && r.user.id === numericUserId && r.categoria?.toLowerCase() === categoria
             );
 
-            const totalReceitas = receitasFiltradas.reduce((acc, receita) => acc + Number(receita.valor), 0);
+            const totalReceitasPrevistas = receitasFiltradas.reduce((acc, receita) => acc + Number(receita.valorPrevisto), 0);
+            const totalReceitasRealizadas = receitasFiltradas.reduce((acc, receita) => acc + Number(receita.valorRealizado), 0);
 
             res.json({
                 mesReferencia: mesReferencia.referencia,
                 categoria,
-                totalReceitas,
+                totalReceitasPrevistas,
+                totalReceitasRealizadas,
                 receitas: receitasFiltradas,
             });
         } catch (error) {
@@ -251,12 +293,16 @@ export class RelatorioController {
                 (d) => d.user && d.user.id === numericUserId && d.categoria?.toLowerCase() === categoria
             );
 
-            const totalDespesas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valor), 0);
+            
+            const totalDespesasPrevistas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valorPrevisto), 0);
+            const totalDespesasRealizadas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valorRealizado), 0);
+
 
             res.json({
                 mesReferencia: mesReferencia.referencia,
                 categoria,
-                totalDespesas,
+                totalDespesasPrevistas,
+                totalDespesasRealizadas,
                 despesas: despesasFiltradas,
             });
         } catch (error) {
@@ -302,13 +348,18 @@ export class RelatorioController {
         console.log("Receitas filtradas:", receitasFiltradas);
 
         // Calcula o total de receitas
-        const totalReceitas = receitasFiltradas.reduce(
-            (acc, receita) => acc + Number(receita.valor), 0
+        const totalReceitasPrevistas = receitasFiltradas.reduce(
+            (acc, receita) => acc + Number(receita.valorPrevisto), 0
+        );
+
+        const totalReceitasRealizadas= receitasFiltradas.reduce(
+            (acc, receita) => acc + Number(receita.valorRealizado), 0
         );
 
         return res.json({
             mesReferencia: mesReferencia.referencia,
-            totalReceitas,
+            totalReceitasRealizadas,
+            totalReceitasPrevistas,
             receitas: receitasFiltradas.length > 0 ? receitasFiltradas : [], // Garante que não retorne `undefined`
         });
 
@@ -349,11 +400,14 @@ async getRelatorioGeralDespesas(req: Request, res: Response) {
 
         const despesasFiltradas = mesReferencia.despesas.filter((d) => d.user && d.user.id === numericUserId);
 
-        const totalDespesas = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valor), 0);
+        const totalDespesasPrevista  = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valorPrevisto), 0);
+        const totalDespesasRealizado = despesasFiltradas.reduce((acc, despesa) => acc + Number(despesa.valorRealizado), 0);
 
         res.json({
             mesReferencia: mesReferencia.referencia,
-            totalDespesas,
+            totalDespesasPrevista,
+            totalDespesasRealizado,
+
             despesas: despesasFiltradas,
         });
     } catch (error) {

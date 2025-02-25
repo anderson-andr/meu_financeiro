@@ -82,7 +82,8 @@ const RelatorioMesECategoria = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Descrição</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -90,7 +91,10 @@ const RelatorioMesECategoria = () => {
                   <TableRow key={idx}>
                     <TableCell>{receita.descricao}</TableCell>
                     <TableCell align="right">
-                      R$ {parseFloat(receita.valor).toFixed(2)}
+                      R$ {parseFloat(receita.valorPrevisto).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      R$ {parseFloat(receita.valorRealizado).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -104,7 +108,8 @@ const RelatorioMesECategoria = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Descrição</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -112,7 +117,10 @@ const RelatorioMesECategoria = () => {
                   <TableRow key={idx}>
                     <TableCell>{despesa.descricao}</TableCell>
                     <TableCell align="right">
-                      R$ {parseFloat(despesa.valor).toFixed(2)}
+                      R$ {parseFloat(despesa.valorPrevisto).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      R$ {parseFloat(despesa.valorRealizado).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}

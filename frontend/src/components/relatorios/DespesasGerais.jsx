@@ -64,7 +64,8 @@ const DespesasGerais = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Descrição</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -72,7 +73,10 @@ const DespesasGerais = () => {
                   <TableRow key={idx}>
                     <TableCell>{despesa.descricao}</TableCell>
                     <TableCell align="right">
-                      R$ {parseFloat(despesa.valor).toFixed(2)}
+                      R$ {parseFloat(despesa.valorPrevisto).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      R$ {parseFloat(despesa.valorRealizado).toFixed(2)}
                     </TableCell>
                   </TableRow>
                 ))}

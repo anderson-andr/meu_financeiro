@@ -108,7 +108,8 @@ const RelatorioGeral = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Descrição</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                   <TableCell>Status</TableCell>
                 </TableRow>
               </TableHead>
@@ -117,7 +118,10 @@ const RelatorioGeral = () => {
                   <TableRow key={idx}>
                     <TableCell>{receita.descricao}</TableCell>
                     <TableCell align="right">
-                      R$ {parseFloat(receita.valor).toFixed(2)}
+                      R$ {parseFloat(receita.valorPrevisto).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      R$ {parseFloat(receita.valorRealizado).toFixed(2)}
                     </TableCell>
                     <TableCell>{receita.status}</TableCell>
                   </TableRow>
@@ -132,7 +136,8 @@ const RelatorioGeral = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Descrição</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                   <TableCell>Status</TableCell>
                 </TableRow>
               </TableHead>
@@ -141,7 +146,10 @@ const RelatorioGeral = () => {
                   <TableRow key={idx}>
                     <TableCell>{despesa.descricao}</TableCell>
                     <TableCell align="right">
-                      R$ {parseFloat(despesa.valor).toFixed(2)}
+                      R$ {parseFloat(despesa.valorPrevisto).toFixed(2)}
+                    </TableCell>
+                    <TableCell align="right">
+                      R$ {parseFloat(despesa.valorRealizado).toFixed(2)}
                     </TableCell>
                     <TableCell>{despesa.status}</TableCell>
                   </TableRow>

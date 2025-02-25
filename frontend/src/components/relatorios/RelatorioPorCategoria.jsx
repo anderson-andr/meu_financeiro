@@ -60,16 +60,20 @@ const RelatorioPorCategoria = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Categoria</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {Object.entries(results.receitasPorCategoria || {}).map(
-                  ([categoria, valor], idx) => (
+                  ([categoria, valorPrevisto,valorRealizado], idx) => (
                     <TableRow key={idx}>
                       <TableCell>{categoria || "Sem categoria"}</TableCell>
                       <TableCell align="right">
-                        R$ {parseFloat(valor).toFixed(2)}
+                        R$ {parseFloat(valorPrevisto).toFixed(2)}
+                      </TableCell>
+                      <TableCell align="right">
+                        R$ {parseFloat(valorRealizado).toFixed(2)}
                       </TableCell>
                     </TableRow>
                   )
@@ -84,16 +88,20 @@ const RelatorioPorCategoria = () => {
               <TableHead>
                 <TableRow>
                   <TableCell>Categoria</TableCell>
-                  <TableCell align="right">Valor (R$)</TableCell>
+                  <TableCell align="right">Valor Previsto(R$)</TableCell>
+                  <TableCell align="right">Valor Realizado(R$)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {Object.entries(results.despesasPorCategoria || {}).map(
-                  ([categoria, valor], idx) => (
+                  ([categoria, valorPrevisto, valorRealizado], idx) => (
                     <TableRow key={idx}>
                       <TableCell>{categoria || "Sem categoria"}</TableCell>
                       <TableCell align="right">
-                        R$ {parseFloat(valor).toFixed(2)}
+                        R$ {parseFloat(valorPrevisto).toFixed(2)}
+                      </TableCell>
+                      <TableCell align="right">
+                        R$ {parseFloat(valorRealizado).toFixed(2)}
                       </TableCell>
                     </TableRow>
                   )
