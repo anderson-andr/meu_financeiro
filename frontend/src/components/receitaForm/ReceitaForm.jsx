@@ -117,7 +117,7 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
             margin="normal"
           />
           <TextField
-            label="Valor"
+            label="Valor Previsto"
             type="number"
             value={valorPrevisto}
             onChange={(e) => setValorPrevisto(e.target.value)}
@@ -125,7 +125,7 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
             margin="normal"
           />
           <TextField
-            label="Valor"
+            label="Valor Realizado"
             type="number"
             value={valorRealizado}
             onChange={(e) => setValorRealizado(e.target.value)}
