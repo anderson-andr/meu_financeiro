@@ -51,32 +51,30 @@ const Home = () => {
     return ((realizado / previsto) * 100).toFixed(2);
   };
 
-  const getTotalPrevistoRealizado = () => {
+  const getTotal = () => {
     if (!dataRelatorio) return null;
-    console.log(dataRelatorio)
+    console.log("Valor Previsto",dataRelatorio.totalReceitasPrevisto + dataRelatorio.totalReceitasRealizado)
   
     // Determinar se o saldo inicial deve ser somado às receitas ou despesas
     const saldoInicial = dataRelatorio.saldoInicial || 0;
-    const receitasPrevistas = (dataRelatorio.totalReceitasPrevisto || 0) + (saldoInicial > 0 ? saldoInicial : 0);
-    const despesasPrevistas = (dataRelatorio.totalDespesasPrevisto || 0) + (saldoInicial < 0 ? Math.abs(saldoInicial) : 0);
-  
+    const totalReceitas = (dataRelatorio.totalReceitasPrevisto || 0) + (saldoInicial > 0 ? saldoInicial : 0) + (dataRelatorio.totalReceitasRealizado) ;
+    const totalDespesas = (dataRelatorio.totalDespesasPrevisto || 0) + (saldoInicial < 0 ? Math.abs(saldoInicial) : 0)+ (dataRelatorio.totalDespesasRealizado)  ;
+    const totalFaltante = totalReceitas - totalDespesas 
     return {
       labels: [
-        "Receitas Previstas",
-        "Receitas Realizadas",
-        "Despesas Previstas",
-        "Despesas Realizadas",
+        "Total Receitas",
+        "Total Despesas",
+        "Total saldo Restante ",
       ],
       datasets: [
         {
           label: "Totais",
           data: [
-            receitasPrevistas,
-            dataRelatorio.totalReceitasRealizado || 0,
-            despesasPrevistas,
-            dataRelatorio.totalDespesasRealizado || 0,
+            totalReceitas,
+            totalDespesas,
+            totalFaltante
           ],
-          backgroundColor: ["#28a745", "#20c997", "#dc3545", "#ff6384"],
+          backgroundColor: ["#28a745", "#dc3545", "#ffc107", "#ff6384"],
         },
       ],
     };
@@ -90,8 +88,8 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
 
   // Determina o saldo inicial e calcula os totais
   const saldoInicial = dataRelatorio.saldoInicial || 0;
-  const totalReceitas = (dataRelatorio.totalReceitasPrevisto || 0) + (saldoInicial > 0 ? saldoInicial : 0);
-  const totalDespesas = (dataRelatorio.totalDespesasPrevisto || 0) + (saldoInicial < 0 ? Math.abs(saldoInicial) : 0);
+  const totalReceitas = (dataRelatorio.totalReceitasRealizado || 0) + (saldoInicial > 0 ? saldoInicial : 0);
+  const totalDespesas = (dataRelatorio.totalDespesasRealizado || 0) + (saldoInicial < 0 ? Math.abs(saldoInicial) : 0);
   const diferenca = totalReceitas - totalDespesas;
 
   // Calcula o valor que falta ou o saldo restante
@@ -103,7 +101,7 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
       return {
           labels: [
               "Orçamento Total (Receitas)",
-              "Despesas Previstas",
+              "Despesas Realizadas",
               "Saldo Restante",
               "Valor Faltante"
           ],
@@ -241,7 +239,7 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
                   textAlign: "center",
                 }}
               >
-                Receitas e Despesas Previstas vs Realizadas
+              Total Receitas e Despesas realizadas e previstas 
               </Typography>
               {dataRelatorio ? (
                 <Box
@@ -255,7 +253,7 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
                   }}
                 >
                   <Doughnut
-                    data={getTotalPrevistoRealizado()}
+                    data={getTotal()}
                     options={{
                       responsive: true,
                       maintainAspectRatio: false,
@@ -298,7 +296,7 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
                 textAlign: "center",
               }}
             >
-              Percentual de Despesas no Orçamento
+             Receitas e Despesas Realizadas
             </Typography>
             {dataRelatorio ? (
               <Box
