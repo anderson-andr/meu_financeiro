@@ -1,86 +1,99 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../services/api';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../components/context/AuthContext';
-import './login.css'; // Importa o CSS específico para o Login
-import { fetchUserData } from '../../services/api';
+import React, { useState, useEffect } from "react";
+import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../components/context/AuthContext";
+import "./login.css"; // Importa o CSS específico para o Login
+import { fetchUserData } from "../../services/api";
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [userId, setUserId] = useState("");  // Altere o estado para armazenar apenas o userId
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [userId, setUserId] = useState(""); // Altere o estado para armazenar apenas o userId
   const navigate = useNavigate();
   const { login } = React.useContext(AuthContext);
 
-  // Use useEffect para verificar e carregar o userId do localStorage
   useEffect(() => {
-
-     // Função para verificar o status da API
-     const pingApi = async () => {
+    const pingApi = async () => {
       try {
-        const response = await fetch('https://api.minhas-financias.online/ping');
+        const response = await fetch("https://api.minhas-financias.online/ping");
         if (response.ok) {
-          console.log('Ping bem-sucedido!');
+          console.log("Ping bem-sucedido!");
         } else {
-          console.log('Erro ao acessar a API');
+          console.log("Erro ao acessar a API");
         }
       } catch (error) {
-        console.error('Erro de rede:', error);
+        console.error("Erro de rede:", error);
       }
     };
 
-    // Chama o pingApi ao carregar o componente
     pingApi();
-    const storedUserId = localStorage.getItem('userId');
+    const storedUserId = localStorage.getItem("userId");
     if (storedUserId) {
-      setUserId(storedUserId);  // Carrega o userId para o estado
-      navigate('/home');  // Redireciona se o usuário já estiver logado
+      setUserId(storedUserId);
+      navigate("/home");
     }
   }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/login', { username, password });
+      const response = await api.post("/login", { username, password });
       const token = response.data.token;
-
-      // Salva o token e chama a função de login do contexto
       login(token);
 
-      // Chama fetchUserData para armazenar o userId no localStorage
       const id = await fetchUserData();
-      setUserId(id);  // Atualiza o estado com o userId
+      setUserId(id);
 
-      // Redireciona para o home
-      navigate('/home');
+      navigate("/home");
       console.log(token);
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
-      alert('Credenciais inválidas');
+      console.error("Erro ao fazer login:", error);
+      alert("Credenciais inválidas");
     }
   };
 
   return (
     <div className="login-container">
       <h2>Login</h2>
-      {userId && <p>Bem-vindo, usuário {userId}!</p>}  {/* Exibe o id do usuário se estiver logado */}
+      {userId && <p>Bem-vindo, usuário {userId}!</p>}
       <form onSubmit={handleSubmit}>
         <input
-          type='text'
+          type="text"
           placeholder="Usuário"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="password-container" style={{ position: "relative" }}>
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "18px",
+            }}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </button>
+        </div>
+
         <button type="submit">Entrar</button>
       </form>
       <div className="register-link">
-        <button onClick={() => navigate('/register')}>Registrar-se</button>
+        <button onClick={() => navigate("/register")}>Registrar-se</button>
       </div>
     </div>
   );
