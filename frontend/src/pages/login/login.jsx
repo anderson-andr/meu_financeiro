@@ -14,6 +14,23 @@ const Login = () => {
 
   // Use useEffect para verificar e carregar o userId do localStorage
   useEffect(() => {
+
+     // Função para verificar o status da API
+     const pingApi = async () => {
+      try {
+        const response = await fetch('https://api.minhas-financias.online/ping');
+        if (response.ok) {
+          console.log('Ping bem-sucedido!');
+        } else {
+          console.log('Erro ao acessar a API');
+        }
+      } catch (error) {
+        console.error('Erro de rede:', error);
+      }
+    };
+
+    // Chama o pingApi ao carregar o componente
+    pingApi();
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       setUserId(storedUserId);  // Carrega o userId para o estado
