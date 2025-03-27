@@ -25,7 +25,12 @@ ChartJS.register(
 );
 
 const Home = () => {
-  const [mesReferencia, setMesReferencia] = useState("03-2025");
+  const [mesReferencia, setMesReferencia] = useState(() => {
+    const hoje = new Date();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const ano = hoje.getFullYear();
+    return `${mes}-${ano}`;
+  });
   const [dataRelatorio, setDataRelatorio] = useState(null);
   const [error, setError] = useState("");
 
