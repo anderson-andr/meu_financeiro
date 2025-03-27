@@ -39,27 +39,23 @@ const Despesas = () => {
   }, []);
 
   // Função para buscar despesas
-  const fetchDespesas = async () => {
-    try {
-      const response = await api.get(`/despesas`);
-      const sortedDespesas = response.data.sort(
-        (a, b) => new Date(b.mesReferencia) - new Date(a.mesReferencia)
-      );
-  
-      setDespesas(sortedDespesas);
-  
-      // Filtrar para exibir apenas as despesas do último mês disponível
-      if (sortedDespesas.length > 0) {
-        const ultimoMes = sortedDespesas[0].mesReferencia;
-        const despesasUltimoMes = sortedDespesas.filter(
-          (despesa) => despesa.mesReferencia === ultimoMes
-        );
-        setFilteredDespesas(despesasUltimoMes);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar despesas:", error);
-    }
-  };
+    const fetchDespesas = async () => {
+        try {
+          const response = await api.get(`/receitas`);
+          
+          const sortedDespesas = response.data.sort((a, b) => {
+            const [mesA, anoA] = a.mesReferencia.split("-").map(Number);
+            const [mesB, anoB] = b.mesReferencia.split("-").map(Number);
+            
+            return anoB - anoA || mesB - mesA; // Ordena primeiro pelo ano e depois pelo mês
+          });
+      
+          setDespesas(sortedDespesas);
+          setFilteredDespesas(sortedDespesas);
+        } catch (error) {
+          console.error("Erro ao buscar despesas:", error);
+        }
+      };
   
 
   // Função para adicionar ou editar uma despesa
