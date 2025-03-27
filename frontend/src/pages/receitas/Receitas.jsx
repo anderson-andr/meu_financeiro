@@ -39,18 +39,23 @@ const Receitas = () => {
   }, []);
 
   // Função para buscar receitas
-  const fetchReceitas = async () => {
-    try {
-      const response = await api.get(`/receitas`);
-      const sortedReceitas = response.data.sort(
-        (a, b) => new Date(b.mesReferencia) - new Date(a.mesReferencia)
-      );
-      setReceitas(sortedReceitas);
-      setFilteredReceitas(sortedReceitas); // Inicialmente, todas as receitas são exibidas
-    } catch (error) {
-      console.error("Erro ao buscar receitas:", error);
-    }
-  };
+    const fetchReceitas = async () => {
+      try {
+        const response = await api.get(`/receitas`);
+        
+        const sortedReceitas = response.data.sort((a, b) => {
+          const [mesA, anoA] = a.mesReferencia.split("-").map(Number);
+          const [mesB, anoB] = b.mesReferencia.split("-").map(Number);
+          
+          return anoB - anoA || mesB - mesA; // Ordena primeiro pelo ano e depois pelo mês
+        });
+    
+        setReceitas(sortedReceitas);
+        setFilteredReceitas(sortedReceitas);
+      } catch (error) {
+        console.error("Erro ao buscar receitas:", error);
+      }
+    };
 
   // Função para adicionar ou editar uma receita
   const handleReceitaAdicionada = async (novaReceita) => {
