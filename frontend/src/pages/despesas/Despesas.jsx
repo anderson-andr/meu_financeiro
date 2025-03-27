@@ -45,12 +45,22 @@ const Despesas = () => {
       const sortedDespesas = response.data.sort(
         (a, b) => new Date(b.mesReferencia) - new Date(a.mesReferencia)
       );
+  
       setDespesas(sortedDespesas);
-      setFilteredDespesas(sortedDespesas); // Inicialmente, todas as despesas são exibidas
+  
+      // Filtrar para exibir apenas as despesas do último mês disponível
+      if (sortedDespesas.length > 0) {
+        const ultimoMes = sortedDespesas[0].mesReferencia;
+        const despesasUltimoMes = sortedDespesas.filter(
+          (despesa) => despesa.mesReferencia === ultimoMes
+        );
+        setFilteredDespesas(despesasUltimoMes);
+      }
     } catch (error) {
       console.error("Erro ao buscar despesas:", error);
     }
   };
+  
 
   // Função para adicionar ou editar uma despesa
   const handleDespesaAdicionada = async (novaDespesa) => {
