@@ -41,7 +41,7 @@ const Despesas = () => {
   // Função para buscar despesas
     const fetchDespesas = async () => {
         try {
-          const response = await api.get(`/receitas`);
+          const response = await api.get(`/despesas`);
           
           const sortedDespesas = response.data.sort((a, b) => {
             const [mesA, anoA] = a.mesReferencia.split("-").map(Number);
