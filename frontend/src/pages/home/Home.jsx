@@ -421,8 +421,6 @@ const getCategoriasMaisLucrativas = () => {
                 </Paper>
               </Grid>
 
-              {/* Resumo Financeiro */}
-              <Grid item xs={12} md={6}>
 
                 {/* Gráfico de Categorias com Maior Lucro */}
                 <Grid item xs={12} md={6}>
