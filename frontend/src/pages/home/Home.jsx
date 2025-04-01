@@ -178,6 +178,39 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
   throw new Error("Formato inválido. Use 'colunas' ou 'linhas'.");
 };
 
+const getCategoriasMaisLucrativas = () => {
+  if (!dataRelatorio || !Array.isArray(dataRelatorio.receitas)) return null;
+
+  const categoriasReceitas = {};
+  dataRelatorio.receitas.forEach((receita) => {
+    const categoria = receita.categoria?.toUpperCase() || "SEM CATEGORIA";
+    categoriasReceitas[categoria] =
+      (categoriasReceitas[categoria] || 0) + Number(receita.valorPrevisto);
+  });
+
+  const sortedCategorias = Object.entries(categoriasReceitas)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20);
+
+  return {
+    labels: sortedCategorias.map(([categoria]) => categoria),
+    datasets: [
+      {
+        label: "Receitas por Categoria",
+        data: sortedCategorias.map(([, valor]) => valor),
+        backgroundColor: [
+          "#007bff",
+          "#6f42c1",
+          "#ffc107",
+          "#28a745",
+          "#dc3545",
+        ],
+        borderRadius: 8,
+      },
+    ],
+  };
+};
+
   
 
   // Função para obter as categorias com maior gasto
@@ -368,6 +401,62 @@ const getDespesasPorcentagemOrcamento = (formato = "colunas") => {
                     >
                       <Bar
                         data={getCategoriasMaisGastadoras()}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (context) => `R$ ${context.raw.toLocaleString("pt-BR")}` } },
+                          },
+                          scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 14 } } },
+                            y: { ticks: { font: { size: 14 } } },
+                          },
+                        }}
+                      />
+                    </Box>
+                  ) : (
+                    <Typography color="textSecondary">Carregando dados...</Typography>
+                  )}
+                </Paper>
+              </Grid>
+
+              {/* Resumo Financeiro */}
+              <Grid item xs={12} md={6}>
+
+                {/* Gráfico de Categorias com Maior Lucro */}
+                <Grid item xs={12} md={6}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    padding: "20px",
+                    background: "#fff",
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ fontSize: "22px", fontWeight: "700", color: "#333" }}
+                  >
+                    Categorias com maior lucro
+                  </Typography>
+                  {dataRelatorio ? (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "300px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Bar
+                        data={getCategoriasMaisLucrativas()}
                         options={{
                           responsive: true,
                           maintainAspectRatio: false,
