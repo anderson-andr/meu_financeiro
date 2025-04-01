@@ -420,6 +420,58 @@ const getCategoriasMaisLucrativas = () => {
                   )}
                 </Paper>
               </Grid>
+              <Grid item xs={12} md={6}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    padding: "20px",
+                    background: "#fff",
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    gutterBottom
+                    sx={{ fontSize: "22px", fontWeight: "700", color: "#333" }}
+                  >
+                    Categorias com Maior Lucro
+                  </Typography>
+                  {dataRelatorio ? (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        height: "300px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Bar
+                        data={getCategoriasMaisLucrativas()}
+                        options={{
+                          responsive: true,
+                          maintainAspectRatio: false,
+                          plugins: {
+                            legend: { display: false },
+                            tooltip: { callbacks: { label: (context) => `R$ ${context.raw.toLocaleString("pt-BR")}` } },
+                          },
+                          scales: {
+                            x: { grid: { display: false }, ticks: { font: { size: 14 } } },
+                            y: { ticks: { font: { size: 14 } } },
+                          },
+                        }}
+                      />
+                    </Box>
+                  ) : (
+                    <Typography color="textSecondary">Carregando dados...</Typography>
+                  )}
+                </Paper>
+              </Grid>
+
 
 
                 {/* Gráfico de Categorias com Maior Lucro */}
