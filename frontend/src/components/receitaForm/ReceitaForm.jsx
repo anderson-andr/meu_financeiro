@@ -97,7 +97,7 @@ const ReceitaForm = ({ open, onClose, onReceitaAdicionada, editingReceita }) => 
           margin="dense"
         >
           <MenuItem value="previsto">Previsto</MenuItem>
-          <MenuItem value="recebido">Recebido</MenuItem>
+          <MenuItem value="realizado">Realizado</MenuItem>
         </TextField>
         <TextField
           label="Valor Previsto"
