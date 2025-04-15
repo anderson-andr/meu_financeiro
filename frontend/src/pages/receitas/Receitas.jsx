@@ -47,39 +47,23 @@ const Receitas = () => {
     fetchReceitas();
   }, []);
 
-<<<<<<< Updated upstream
-  // Função para buscar receitas
-    const fetchReceitas = async () => {
-      try {
-        const response = await api.get(`/receitas`);
-        
-        const sortedReceitas = response.data.sort((a, b) => {
-          const [mesA, anoA] = a.mesReferencia.split("-").map(Number);
-          const [mesB, anoB] = b.mesReferencia.split("-").map(Number);
-          
-          return anoB - anoA || mesB - mesA; // Ordena primeiro pelo ano e depois pelo mês
-        });
-    
-        setReceitas(sortedReceitas);
-        setFilteredReceitas(sortedReceitas);
-      } catch (error) {
-        console.error("Erro ao buscar receitas:", error);
-      }
-    };
-=======
   const fetchReceitas = async () => {
     try {
       const response = await api.get("/receitas");
-      const sorted = response.data.sort(
-        (a, b) => new Date(b.mesReferencia) - new Date(a.mesReferencia)
-      );
+      const sorted = response.data.sort((a, b) => {
+        // Convertendo o mesReferencia para um número que representa "YYYYMM"
+        const mesReferenciaA = parseInt(a.mesReferencia.replace("-", ""), 10);
+        const mesReferenciaB = parseInt(b.mesReferencia.replace("-", ""), 10);
+  
+        // Comparando como números (maior é mais recente)
+        return mesReferenciaB - mesReferenciaA;
+      });
       setReceitas(sorted);
       setFilteredReceitas(sorted);
     } catch (error) {
       console.error("Erro ao buscar receitas:", error);
     }
   };
->>>>>>> Stashed changes
 
   const applyFilters = () => {
     let filtered = [...receitas];

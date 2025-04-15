@@ -46,40 +46,23 @@ const Despesas = () => {
     fetchDespesas();
   }, []);
 
-<<<<<<< Updated upstream
-  // Função para buscar despesas
-    const fetchDespesas = async () => {
-        try {
-          const response = await api.get(`/despesas`);
-          
-          const sortedDespesas = response.data.sort((a, b) => {
-            const [mesA, anoA] = a.mesReferencia.split("-").map(Number);
-            const [mesB, anoB] = b.mesReferencia.split("-").map(Number);
-            
-            return anoB - anoA || mesB - mesA; // Ordena primeiro pelo ano e depois pelo mês
-          });
-      
-          setDespesas(sortedDespesas);
-          setFilteredDespesas(sortedDespesas);
-        } catch (error) {
-          console.error("Erro ao buscar despesas:", error);
-        }
-      };
-  
-=======
   const fetchDespesas = async () => {
     try {
       const response = await api.get("/despesas");
-      const sorted = response.data.sort(
-        (a, b) => new Date(b.mesReferencia) - new Date(a.mesReferencia)
-      );
+      const sorted = response.data.sort((a, b) => {
+        // Convertendo o mesReferencia para um número que representa "YYYYMM"
+        const mesReferenciaA = parseInt(a.mesReferencia.replace("-", ""), 10);
+        const mesReferenciaB = parseInt(b.mesReferencia.replace("-", ""), 10);
+  
+        // Comparando como números (maior é mais recente)
+        return mesReferenciaB - mesReferenciaA;
+      });
       setDespesas(sorted);
       setFilteredDespesas(sorted);
     } catch (error) {
       console.error("Erro ao buscar despesas:", error);
     }
   };
->>>>>>> Stashed changes
 
   const applyFilters = () => {
     let filtered = [...despesas];
