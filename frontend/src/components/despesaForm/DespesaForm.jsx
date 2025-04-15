@@ -1,164 +1,131 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
-  TextField,
-  Select,
-  MenuItem,
-  Button,
-  FormControl,
-  InputLabel,
   DialogActions,
+  Button,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 
 const DespesaForm = ({ open, onClose, onDespesaAdicionada, editingDespesa }) => {
-  const [descricao, setDescricao] = useState("");
-  const [categoria, setCategoria] = useState("");
-  const [valorPrevisto, setValorPrevisto] = useState("");
-  const [valorRealizado, setValorRealizado] = useState("");
-  const [status, setStatus] = useState("previsto");
-  const [mesReferencia, setMesReferencia] = useState("");
-  const [data, setData] = useState("");
+  const [formData, setFormData] = useState({
+    mesReferencia: "",
+    data: "",
+    categoria: "",
+    descricao: "",
+    status: "previsto",
+    valorPrevisto: "",
+    valorRealizado: "",
+  });
 
-  // Função para resetar os campos do formulário
-  const resetForm = () => {
-    setDescricao("");
-    setCategoria("");
-    setValorPrevisto("");
-    setValorRealizado("");
-    setStatus("previsto");
-    setMesReferencia("");
-    setData("");
+  useEffect(() => {
+    if (editingDespesa) {
+      setFormData(editingDespesa);
+    } else {
+      setFormData({
+        mesReferencia: "",
+        data: "",
+        categoria: "",
+        descricao: "",
+        status: "previsto",
+        valorPrevisto: "",
+        valorRealizado: "",
+      });
+    }
+  }, [editingDespesa]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  // Preenche os campos com os dados da despesa em edição ou limpa os campos
-  useEffect(() => {
-    if (open) {
-      if (editingDespesa) {
-        setDescricao(editingDespesa.descricao || "");
-        setCategoria(editingDespesa.categoria || "");
-        setValorPrevisto(editingDespesa.valorPrevisto || "");
-        setValorRealizado(editingDespesa.valorRealizado || "");
-        setStatus(editingDespesa.status || "previsto");
-        setMesReferencia(editingDespesa.mesReferencia || "");
-        setData(editingDespesa.data || "");
-      } else {
-        resetForm(); // Limpa os campos se não estiver editando
-      }
-    }
-  }, [open, editingDespesa]);
-
-  // Função para lidar com o envio do formulário
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const novaDespesa = {
-      descricao,
-      valorPrevisto,
-      valorRealizado,
-      categoria,
-      status,
-      mesReferencia,
-      data,
-    };
-    try {
-      await onDespesaAdicionada(novaDespesa); // Passa a nova despesa para o pai
-      resetForm(); // Limpa os campos após salvar
-      onClose(); // Fecha o modal
-    } catch (error) {
-      console.error("Erro ao adicionar/editar despesa:", error);
-    }
+  const handleSubmit = () => {
+    onDespesaAdicionada(formData);
+    onClose();
   };
 
   return (
-    <Dialog open={open} onClose={() => { resetForm(); onClose(); }}>
-      <DialogTitle>
-        {editingDespesa ? "Editar Despesa" : "Adicionar Despesa"}
-      </DialogTitle>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>{editingDespesa ? "Editar Despesa" : "Nova Despesa"}</DialogTitle>
       <DialogContent>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            label="Mês Referência(MM-YYYY)"
-            value={mesReferencia}
-            onChange={(e) => setMesReferencia(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Data Lançamento"
-            type="date"
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            fullWidth
-            margin="normal"
-            InputLabelProps={{ shrink: true }}
-          />
-          <TextField
-            label="Categoria"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Descrição"
-            value={descricao}
-            onChange={(e) => setDescricao(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-            <TextField
-            label="Valor Previsto"
-            type="number"
-            value={valorPrevisto}
-            onChange={(e) => setValorPrevisto(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Valor Realizado"
-            type="number"
-            value={valorRealizado}
-            onChange={(e) => setValorRealizado(e.target.value)}
-            fullWidth
-            margin="normal"
-          />
-          <FormControl fullWidth margin="normal">
-            <InputLabel>Status</InputLabel>
-            <Select
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              label="Status"
-            >
-              <MenuItem value="previsto">Previsto</MenuItem>
-              <MenuItem value="realizado">Realizado</MenuItem>
-            </Select>
-          </FormControl>
-        </form>
+        <TextField
+          label="Mês Referência"
+          name="mesReferencia"
+          value={formData.mesReferencia}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        />
+        <TextField
+          label="Data"
+          name="data"
+          type="date"
+          value={formData.data}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+          InputLabelProps={{ shrink: true }}
+        />
+        <TextField
+          label="Categoria"
+          name="categoria"
+          value={formData.categoria}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        />
+        <TextField
+          label="Descrição"
+          name="descricao"
+          value={formData.descricao}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        />
+        <TextField
+          select
+          label="Status"
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        >
+          <MenuItem value="previsto">Previsto</MenuItem>
+          <MenuItem value="realizado">Realizado</MenuItem>
+        </TextField>
+        <TextField
+          label="Valor Previsto"
+          name="valorPrevisto"
+          type="number"
+          value={formData.valorPrevisto}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        />
+        <TextField
+          label="Valor Realizado"
+          name="valorRealizado"
+          type="number"
+          value={formData.valorRealizado}
+          onChange={handleChange}
+          fullWidth
+          margin="dense"
+        />
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => { resetForm(); onClose(); }}>Cancelar</Button>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-        >
+        <Button onClick={onClose}>Cancelar</Button>
+        <Button onClick={handleSubmit} variant="contained" color="primary">
           Salvar
         </Button>
       </DialogActions>
     </Dialog>
   );
-};
-
-// Validação de props
-DespesaForm.propTypes = {
-  open: PropTypes.bool.isRequired, // Controla a visibilidade do modal
-  onClose: PropTypes.func.isRequired, // Função para fechar o modal
-  onDespesaAdicionada: PropTypes.func.isRequired, // Função para adicionar/editar despesa
-  editingDespesa: PropTypes.object, // Despesa em edição (opcional)
 };
 
 export default DespesaForm;

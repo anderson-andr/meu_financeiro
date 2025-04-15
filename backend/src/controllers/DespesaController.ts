@@ -1,158 +1,169 @@
 // src/controllers/DespesaController.ts
 import { Request, Response } from "express";
-import { DespesaService } from "../services/DespesaService";
 import { AppDataSource } from "../data-source";
 import { Despesa } from "../entities/Despesa";
 import { MesReferencia } from "../entities/MesReferencia";
-import { AuthUser } from "../types";
+import { DespesaService } from "../services/DespesaService";
+import { In } from "typeorm";
 
 const despesaRepository = AppDataSource.getRepository(Despesa);
 const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
 const despesaService = new DespesaService(despesaRepository);
 
 export class DespesaController {
-    // Método para pegar todas as despesas do usuário logado
-// Método para pegar todas as despesas do usuário logado
-async getAll(req: any, res: Response, user: AuthUser) {
+  async getAll(req: any, res: Response) {
     try {
-        // Extrai o userId do objeto req.user (inserido pelo middleware de autenticação)
-        const userId = req.user.userId;
-        const despesas = await despesaService.getAllByUser(userId);
-        
-        // Formata as despesas para incluir o mês de referência no retorno
-        const despesasComMesReferencia = despesas.map((despesa) => ({
-            ...despesa,
-            mesReferencia: despesa.mesReferencia ? despesa.mesReferencia.referencia : null,
-        }));
-        
-        res.json(despesasComMesReferencia);
+      const userId = req.user.userId;
+      const despesas = await despesaService.getAllByUser(userId);
+
+      const despesasComMesReferencia = despesas.map((despesa) => ({
+        ...despesa,
+        mesReferencia: despesa.mesReferencia ? despesa.mesReferencia.referencia : null,
+      }));
+
+      res.json(despesasComMesReferencia);
     } catch (error) {
-        res.status(500).json({ message: "Erro ao buscar despesas", error });
+      res.status(500).json({ message: "Erro ao buscar despesas", error });
     }
-}
+  }
 
+  async getById(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
 
-    // Método para pegar uma despesa por ID (do usuário logado)
-    async getById(req: any, res: Response, user: AuthUser) {
-        try {
-            const userId = req.user.userId;// Obtém o ID do usuário do token
-            const { id } = req.params;
-            console.log("ID do usuário autenticado:", userId);            
+      const despesa = await despesaService.getById(Number(id), userId);
+      if (!despesa) {
+        return res.status(404).json({ message: "Despesa não encontrada ou não pertence ao usuário" });
+      }
 
-            const despesa = await despesaService.getById(Number(id), userId);
-            if (!despesa) {
-                return res.status(404).json({ message: "Despesa não encontrada ou não pertence ao usuário" });
-            }
-
-            res.json(despesa);
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao buscar despesa", error });
-        }
+      res.json(despesa);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar despesa", error });
     }
+  }
 
-    async create(req: any, res: Response) {
-        try {
-            // Obtém o ID do usuário do token, já presente em req.user pelo authMiddleware
-            const user = req.user   // Atribui corretamente o usuário
-            if (!user || !user.userId) {
-                return res.status(401).json({ message: "Usuário não autenticado ou ID não encontrado" });
-            }
-    
-            const userId = user.userId;  // Pega o ID do usuário do token
-            console.log("ID do usuário autenticado:", userId);   // Verificação no console
-    
-            const { mesReferencia, descricao, categoria, status,  valorPrevisto,valorRealizado, data } = req.body;
-    
-            // Verificação de campos obrigatórios
-            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
-                return res.status(400).json({ message: "Todos os campos são obrigatórios" });
-            }
-    
-            // Buscar ou criar a entidade MesReferencia
-            let mesReferenciaEntity = await mesReferenciaRepository.findOne({
-                where: { referencia: mesReferencia },
-            });
-            if (!mesReferenciaEntity) {
-                mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-                await mesReferenciaRepository.save(mesReferenciaEntity);
-            }
-    
-            // Criar a despesa e associar ao usuário autenticado (userId)
-            const despesa = await despesaService.create(
-                {
-                    descricao,
-                    categoria,
-                    status,
-                    valorPrevisto,
-                    valorRealizado,
-                    data,
-                    mesReferencia: mesReferenciaEntity,
-                },
-                userId  // Passa o ID do usuário para o serviço de criação
-            );
-    
-            res.status(201).json(despesa);
-        } catch (error) {
-            console.error(error);
-            res.status(500).json({ message: "Erro ao criar despesa", error });
-        }
+  async create(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const { mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
+
+      if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
+        return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      }
+
+      let mesReferenciaEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesReferencia } });
+      if (!mesReferenciaEntity) {
+        mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
+        await mesReferenciaRepository.save(mesReferenciaEntity);
+      }
+
+      const despesa = await despesaService.create(
+        { descricao, categoria, status, valorPrevisto, valorRealizado, data, mesReferencia: mesReferenciaEntity },
+        userId
+      );
+
+      res.status(201).json(despesa);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao criar despesa", error });
     }
-    
+  }
 
-    // Método para atualizar uma despesa existente (do usuário logado)
-    async update(req: any, res: Response) {
-        try {
-            const user = req.user
-            const { id } = req.params;
-            const userId = user.userId // Pegue apenas o ID
-            console.log("ID do usuário autenticado:", userId);  
-            const { mesReferencia, descricao, categoria, status, valorPrevisto,valorRealizado, data } = req.body;
+  async update(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
+      const { mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
 
-            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
-                return res.status(400).json({ message: "Todos os campos são obrigatórios" });
-            }
+      if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
+        return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      }
 
-            // Buscar ou criar a entidade MesReferencia
-            let mesReferenciaEntity = await mesReferenciaRepository.findOne({
-                where: { referencia: mesReferencia },
-            });
-            if (!mesReferenciaEntity) {
-                mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-                await mesReferenciaRepository.save(mesReferenciaEntity);
-            }
+      let mesReferenciaEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesReferencia } });
+      if (!mesReferenciaEntity) {
+        mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
+        await mesReferenciaRepository.save(mesReferenciaEntity);
+      }
 
-            const updatedDespesa = await despesaService.update(
-                Number(id),
-                {
-                    descricao,
-                    categoria,
-                    status,
-                    valorPrevisto,
-                    valorRealizado,
-                    data,
-                    mesReferencia: mesReferenciaEntity,
-                },
-                userId
-            );
+      const updatedDespesa = await despesaService.update(
+        Number(id),
+        { descricao, categoria, status, valorPrevisto, valorRealizado, data, mesReferencia: mesReferenciaEntity },
+        userId
+      );
 
-            res.json(updatedDespesa);
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao atualizar despesa", error });
-        }
+      res.json(updatedDespesa);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao atualizar despesa", error });
     }
+  }
 
-    // Método para deletar uma despesa (do usuário logado)
-    async delete(req: any, res: Response) {
-        try {
-            const user = req.user as AuthUser;// Obtém o ID do usuário do token
-            const { id } = req.params;
-            const userId = user.userId; // Pegue apenas o ID
-            console.log("ID do usuário autenticado:", userId);  
-            await despesaService.delete(Number(id), userId);
+  async delete(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const { id } = req.params;
 
-            res.status(200).json({ message: "Despesa deletada com sucesso" });
-        } catch (error) {
-            res.status(500).json({ message: "Erro ao deletar despesa", error });
-        }
+      await despesaService.delete(Number(id), userId);
+
+      res.status(200).json({ message: "Despesa deletada com sucesso" });
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao deletar despesa", error });
     }
+  }
+
+  async duplicar(req: any, res: Response) {
+    try {
+      const userId = req.user.userId;
+      const {mesDestino, despesaIds } = req.body;
+
+      if (!mesDestino || !Array.isArray(despesaIds) || despesaIds.length === 0) {
+        return res.status(400).json({ message: "Informe o mês de destino e ao menos uma despesa para duplicar" });
+      }
+
+      const despesaIdsNumericos = despesaIds
+        .map((id: any) => {
+          const parsed = parseInt(id);
+          return isNaN(parsed) ? null : parsed;
+        })
+        .filter((id: number | null): id is number => id !== null);
+
+      if (despesaIdsNumericos.length === 0) {
+        return res.status(400).json({ message: "IDs de despesa inválidos" });
+      }
+
+      let mesDestinoEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesDestino } });
+      if (!mesDestinoEntity) {
+        mesDestinoEntity = mesReferenciaRepository.create({ referencia: mesDestino });
+        await mesReferenciaRepository.save(mesDestinoEntity);
+      }
+
+      const despesasSelecionadas = await despesaRepository.find({
+        where: { id: In(despesaIdsNumericos), user: { id: userId } },
+        relations: ["mesReferencia", "user"],
+      });
+
+      if (despesasSelecionadas.length === 0) {
+        return res.status(404).json({ message: "Nenhuma despesa encontrada com os IDs fornecidos" });
+      }
+
+      const despesasDuplicadas = despesasSelecionadas.map((d) =>
+        despesaRepository.create({
+          descricao: d.descricao,
+          categoria: d.categoria,
+          status: d.status,
+          valorPrevisto: d.valorPrevisto,
+          valorRealizado: d.valorRealizado,
+          data: d.data,
+          mesReferencia: mesDestinoEntity,
+          user: d.user,
+        })
+      );
+
+      await despesaRepository.save(despesasDuplicadas);
+
+      return res.status(201).json({ message: "Despesas duplicadas com sucesso", despesas: despesasDuplicadas });
+    } catch (error) {
+      console.error("❌ Erro ao duplicar despesas:", error);
+      return res.status(500).json({ message: "Erro ao duplicar despesas", error });
+    }
+  }
 }

@@ -4,6 +4,8 @@ import { ReceitaService } from "../services/ReceitaService";
 import { AppDataSource } from "../data-source";
 import { Receita } from "../entities/Receita";
 import { MesReferencia } from "../entities/MesReferencia";
+import { In } from "typeorm";
+
 
 const receitaRepository = AppDataSource.getRepository(Receita);
 const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
@@ -142,4 +144,87 @@ async getAll(req: any, res: Response) {
             res.status(500).json({ message: "Erro ao deletar receita", error });
         }
     }
+
+   
+    async duplicarReceitas(req: any, res: Response) {
+        try {
+            const userId = req.user.userId;
+            const { mesDestino, receitaIds } = req.body;
+    
+            console.log("🔎 Recebido:", { mesDestino, receitaIds });
+    
+            if (!mesDestino || !Array.isArray(receitaIds) || receitaIds.length === 0) {
+                return res.status(400).json({ message: "Informe o mês de destino e ao menos uma receita para duplicar" });
+            }
+    
+            // Conversão e validação
+            const receitaIdsNumericos = receitaIds
+                .map((id: any) => {
+                    const parsed = parseInt(id);
+                    if (isNaN(parsed)) console.warn("⚠️ ID inválido detectado:", id);
+                    return parsed;
+                })
+                .filter((id: number) => !isNaN(id));
+    
+            console.log("✅ IDs numéricos filtrados:", receitaIdsNumericos);
+    
+            if (receitaIdsNumericos.length === 0) {
+                return res.status(400).json({ message: "IDs de receita inválidos" });
+            }
+    
+            // Buscar ou criar mês destino
+            let mesDestinoEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesDestino } });
+            if (!mesDestinoEntity) {
+                mesDestinoEntity = mesReferenciaRepository.create({ referencia: mesDestino });
+                await mesReferenciaRepository.save(mesDestinoEntity);
+            }
+    
+            console.log("📅 Mês de destino:", mesDestinoEntity);
+    
+            // Buscar receitas válidas
+            const receitasSelecionadas = await receitaRepository.find({
+                where: {
+                    id: In(receitaIdsNumericos),
+                    user: { id: userId },
+                },
+                relations: ["mesReferencia", "user"],
+            });
+    
+            console.log("📄 Receitas encontradas:", receitasSelecionadas.length);
+    
+            if (receitasSelecionadas.length === 0) {
+                return res.status(404).json({ message: "Nenhuma receita encontrada com os IDs fornecidos" });
+            }
+    
+            // Duplicar receitas
+            const receitasDuplicadas = receitasSelecionadas.map((r) => {
+             
+    
+                const duplicada = receitaRepository.create({
+                    descricao: r.descricao,
+                    categoria: r.categoria,
+                    status: r.status,
+                    valorPrevisto: r.valorPrevisto,
+                    valorRealizado: r.valorRealizado,
+                    data: r.data,
+                    mesReferencia: mesDestinoEntity,
+                    user: r.user,
+                });
+    
+                console.log("🆕 Receita duplicada:", duplicada);
+                return duplicada;
+            });
+    
+            await receitaRepository.save(receitasDuplicadas);
+    
+            return res.status(201).json({ message: "Receitas duplicadas com sucesso", receitas: receitasDuplicadas });
+    
+        } catch (error) {
+            console.error("❌ Erro ao duplicar receitas:", error);
+            return res.status(500).json({ message: "Erro ao duplicar receitas", error });
+        }
+    }
+    
+
+    
 }

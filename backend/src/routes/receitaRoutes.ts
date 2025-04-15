@@ -33,4 +33,9 @@ router.delete("/receitas/:id", async (req: Request, res: Response) => {
     receitaController.delete(req, res);
 });
 
+// ✅ Rota para duplicar receitas de um mês para outro
+router.post("/receitas/duplicar", async (req: Request, res: Response) => {
+    receitaController.duplicarReceitas(req, res);
+});
+
 export default router;
