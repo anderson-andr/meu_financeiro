@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Chip,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -40,7 +41,7 @@ const Despesas = () => {
   const [mesReferenciaFilter, setMesReferenciaFilter] = useState("");
   const [valorFilter, setValorFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 5;
+  const rowsPerPage = 10;
 
   useEffect(() => {
     fetchDespesas();
@@ -183,7 +184,14 @@ const Despesas = () => {
                 <TableCell>{dayjs(d.data).format("DD/MM/YYYY")}</TableCell>
                 <TableCell>{d.categoria}</TableCell>
                 <TableCell>{d.descricao}</TableCell>
-                <TableCell>{d.status}</TableCell>
+               <TableCell>
+                  <Chip
+                    label={d.status}
+                    color={d.status === "realizado" ? "success" : "warning"}
+                    size="small"
+                    sx={{ textTransform: "capitalize" }}
+                  />
+                </TableCell>
                 <TableCell align="right">
                   {Number(d.valorPrevisto).toLocaleString("pt-BR", {
                     style: "currency",
