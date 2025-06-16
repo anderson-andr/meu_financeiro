@@ -31,3 +31,20 @@ cd backend
 yarn install # ou npm install
 cd src
 ts-node server.ts
+Configure as variáveis no arquivo .env conforme o exemplo.
+
+💻 Frontend
+bash
+Copiar
+Editar
+cd frontend
+npm install
+npm run dev
+🌍 Deploy
+Backend: AWS EC2 + Cloudflare
+
+Frontend: Vercel
+🔗 minhas-financas.online
+
+👨‍💻 Desenvolvedor
+Anderson André Pereira de Souza
