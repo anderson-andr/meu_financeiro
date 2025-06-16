@@ -48,3 +48,4 @@ Frontend: Vercel
 
 👨‍💻 Desenvolvedor
 Anderson André Pereira de Souza
+https://www.linkedin.com/in/anderson-andr%C3%A9-3b4513169/
