@@ -11,7 +11,7 @@ const app = express();
 // Middleware para permitir requisições CORS
 app.use(
   cors({
-    origin: "http://localhost:5173", // Permite apenas requisições do frontend na porta 5173
+    origin: "*"
   })
 );
 
