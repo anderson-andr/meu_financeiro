@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getToken } from '../utils/auth';
 
 
-const baseProd = 'https://api.minhas-financias.online/api';
+const baseProd = 'http://3.143.249.173:3000/api';
 const baseDev = 'http://localhost:3000/api';
 
 // Criação da instância do Axios
