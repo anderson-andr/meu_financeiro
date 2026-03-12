@@ -16,7 +16,7 @@ const Login = () => {
   useEffect(() => {
     const pingApi = async () => {
       try {
-        const response = await fetch("https://api.minhas-financias.online/ping");
+        const response = await fetch("https://murphy-measuring-defined-cope.trycloudflare.com/api/ping");
         if (response.ok) {
           console.log("Ping bem-sucedido!");
         } else {
