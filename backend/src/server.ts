@@ -5,5 +5,5 @@ import "reflect-metadata";
 
 AppDataSource.initialize().then(() => {
     console.log("Banco de dados conectado!");
-    app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
+    app.listen(3000,'0.0.0.0' ,() => console.log("Servidor rodando na porta 3000"));
 }).catch(err => console.error("Erro ao conectar ao banco:", err));
