@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getToken } from '../utils/auth';
 
 
-const baseProd = 'https://murphy-measuring-defined-cope.trycloudflare.com/api';
+const baseProd = 'https://warnings-creates-functions-meet.trycloudflare.com/api';
 const baseDev = 'http://localhost:3000/api';
 
 // Criação da instância do Axios
