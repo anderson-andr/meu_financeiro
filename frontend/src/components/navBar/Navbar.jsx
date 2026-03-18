@@ -18,7 +18,7 @@ const Navbar = () => {
             {/* Links visíveis apenas para usuários autenticados */}
             <li>
               <Button variant="text" onClick={() => navigate("/home")}>
-                Início
+                Home
               </Button>
             </li>
             <li>
