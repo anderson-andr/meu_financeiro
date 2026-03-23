@@ -1,76 +1,89 @@
-// src/controllers/ReceitaController.ts
 import { Request, Response } from "express";
 import { ReceitaService } from "../services/ReceitaService";
 import { AppDataSource } from "../data-source";
 import { Receita } from "../entities/Receita";
 import { MesReferencia } from "../entities/MesReferencia";
 import { In } from "typeorm";
-
+import { parseMonthReference } from "../utils/monthReference";
 
 const receitaRepository = AppDataSource.getRepository(Receita);
 const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
 const receitaService = new ReceitaService(receitaRepository);
 
+const formatReceita = (receita: any) => ({
+    ...receita,
+    mes: receita.mesReferencia?.mes ?? null,
+    ano: receita.mesReferencia?.ano ?? null,
+    mesReferencia: receita.mesReferencia?.referencia ?? null,
+});
+
+const resolveMesReferencia = async (input: { mes?: unknown; ano?: unknown; mesReferencia?: unknown }) => {
+    const parsed = parseMonthReference(input);
+
+    let entity = await mesReferenciaRepository.findOne({
+        where: [
+            { referencia: parsed.referencia },
+            { mes: parsed.mes, ano: parsed.ano },
+        ],
+    });
+
+    if (!entity) {
+        entity = mesReferenciaRepository.create({
+            referencia: parsed.referencia,
+            mes: parsed.mes,
+            ano: parsed.ano,
+        });
+        await mesReferenciaRepository.save(entity);
+        return entity;
+    }
+
+    if (entity.referencia !== parsed.referencia || entity.mes !== parsed.mes || entity.ano !== parsed.ano) {
+        entity.referencia = parsed.referencia;
+        entity.mes = parsed.mes;
+        entity.ano = parsed.ano;
+        await mesReferenciaRepository.save(entity);
+    }
+
+    return entity;
+};
+
 export class ReceitaController {
-    // Método para pegar todas as receitas do usuário logado
 async getAll(req: any, res: Response) {
     try {
-        // Extraia o userId do objeto req.user
         const userId = req.user.userId;
         const receitas = await receitaService.getAllByUser(userId);
-        console.log(userId)
-
-        // Formata as receitas para incluir o mês de referência no retorno
-        const receitasComMesReferencia = receitas.map((receita) => ({
-            ...receita,
-            mesReferencia: receita.mesReferencia ? receita.mesReferencia.referencia : null,
-        }));
-
-        res.json(receitasComMesReferencia);
+        res.json(receitas.map(formatReceita));
     } catch (error) {
         res.status(500).json({ message: "Erro ao buscar receitas", error });
     }
 }
 
-
-    // Método para pegar uma receita por ID (do usuário logado)
     async getById(req: any, res: Response) {
         try {
-            const userId = req.userId; // Obtém o ID do usuário do token
+            const userId = req.user.userId;
             const { id } = req.params;
 
             const receita = await receitaService.getById(Number(id), userId);
             if (!receita) {
-                return res.status(404).json({ message: "Receita não encontrada ou não pertence ao usuário" });
+                return res.status(404).json({ message: "Receita n�o encontrada ou n�o pertence ao usu�rio" });
             }
 
-            res.json(receita);
+            return res.json(formatReceita(receita));
         } catch (error) {
-            res.status(500).json({ message: "Erro ao buscar receita", error });
+            return res.status(500).json({ message: "Erro ao buscar receita", error });
         }
     }
 
-    // Método para criar uma nova receita (associada ao usuário logado)
     async create(req: any, res: Response) {
-        console.log("Create", req.userId)
-
         try {
-            const userId = req.user.userId; // Obtém o ID do usuário do token
-            const { mesReferencia, descricao, categoria, status, valorPrevisto,valorRealizado, data } = req.body;
-            console.log("Create", userId)
+            const userId = req.user.userId;
+            const { mes, ano, mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
 
-            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
-                return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+            if (!descricao || !categoria || !status || valorPrevisto === undefined || valorRealizado === undefined || !data) {
+                return res.status(400).json({ message: "Todos os campos s�o obrigat�rios" });
             }
 
-            // Buscar ou criar a entidade MesReferencia
-            let mesReferenciaEntity = await mesReferenciaRepository.findOne({
-                where: { referencia: mesReferencia },
-            });
-            if (!mesReferenciaEntity) {
-                mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-                await mesReferenciaRepository.save(mesReferenciaEntity);
-            }
+            const mesReferenciaEntity = await resolveMesReferencia({ mes, ano, mesReferencia });
 
             const receita = await receitaService.create(
                 {
@@ -85,31 +98,23 @@ async getAll(req: any, res: Response) {
                 userId
             );
 
-            res.status(201).json(receita);
+            return res.status(201).json(formatReceita(receita));
         } catch (error) {
-            res.status(500).json({ message: "Erro ao criar receita", error });
+            return res.status(500).json({ message: "Erro ao criar receita", error });
         }
     }
 
-    // Método para atualizar uma receita existente (do usuário logado)
     async update(req: any, res: Response) {
         try {
-            const userId = req.user.userId;// Obtém o ID do usuário do token
+            const userId = req.user.userId;
             const { id } = req.params;
-            const { mesReferencia, descricao, categoria, status, valorPrevisto,valorRealizado,data } = req.body;
+            const { mes, ano, mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
 
-            if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado|| !data) {
-                return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+            if (!descricao || !categoria || !status || valorPrevisto === undefined || valorRealizado === undefined || !data) {
+                return res.status(400).json({ message: "Todos os campos s�o obrigat�rios" });
             }
 
-            // Buscar ou criar a entidade MesReferencia
-            let mesReferenciaEntity = await mesReferenciaRepository.findOne({
-                where: { referencia: mesReferencia },
-            });
-            if (!mesReferenciaEntity) {
-                mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-                await mesReferenciaRepository.save(mesReferenciaEntity);
-            }
+            const mesReferenciaEntity = await resolveMesReferencia({ mes, ano, mesReferencia });
 
             const updatedReceita = await receitaService.update(
                 Number(id),
@@ -125,63 +130,51 @@ async getAll(req: any, res: Response) {
                 userId
             );
 
-            res.json(updatedReceita);
+            return res.json(formatReceita(updatedReceita));
         } catch (error) {
-            res.status(500).json({ message: "Erro ao atualizar receita", error });
+            return res.status(500).json({ message: "Erro ao atualizar receita", error });
         }
     }
 
-    // Método para deletar uma receita (do usuário logado)
     async delete(req: any, res: Response) {
         try {
-            const userId = req.user.userId; // Obtém o ID do usuário do token
+            const userId = req.user.userId;
             const { id } = req.params;
 
             await receitaService.delete(Number(id), userId);
 
-            res.status(200).json({ message: "Receita deletada com sucesso" });
+            return res.status(200).json({ message: "Receita deletada com sucesso" });
         } catch (error) {
-            res.status(500).json({ message: "Erro ao deletar receita", error });
+            return res.status(500).json({ message: "Erro ao deletar receita", error });
         }
     }
 
-   
     async duplicarReceitas(req: any, res: Response) {
         try {
             const userId = req.user.userId;
-            const { mesDestino, receitaIds } = req.body;
-    
-            console.log("🔎 Recebido:", { mesDestino, receitaIds });
-    
-            if (!mesDestino || !Array.isArray(receitaIds) || receitaIds.length === 0) {
-                return res.status(400).json({ message: "Informe o mês de destino e ao menos uma receita para duplicar" });
+            const { mesDestinoMes, mesDestinoAno, mesDestino, receitaIds } = req.body;
+
+            if ((!mesDestino && (mesDestinoMes === undefined || mesDestinoAno === undefined)) || !Array.isArray(receitaIds) || receitaIds.length === 0) {
+                return res.status(400).json({ message: "Informe o m�s de destino e ao menos uma receita para duplicar" });
             }
-    
-            // Conversão e validação
+
             const receitaIdsNumericos = receitaIds
                 .map((id: any) => {
                     const parsed = parseInt(id);
-                    if (isNaN(parsed)) console.warn("⚠️ ID inválido detectado:", id);
-                    return parsed;
+                    return Number.isNaN(parsed) ? null : parsed;
                 })
-                .filter((id: number) => !isNaN(id));
-    
-            console.log("✅ IDs numéricos filtrados:", receitaIdsNumericos);
-    
+                .filter((id: number | null): id is number => id !== null);
+
             if (receitaIdsNumericos.length === 0) {
-                return res.status(400).json({ message: "IDs de receita inválidos" });
+                return res.status(400).json({ message: "IDs de receita inv�lidos" });
             }
-    
-            // Buscar ou criar mês destino
-            let mesDestinoEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesDestino } });
-            if (!mesDestinoEntity) {
-                mesDestinoEntity = mesReferenciaRepository.create({ referencia: mesDestino });
-                await mesReferenciaRepository.save(mesDestinoEntity);
-            }
-    
-            console.log("📅 Mês de destino:", mesDestinoEntity);
-    
-            // Buscar receitas válidas
+
+            const mesDestinoEntity = await resolveMesReferencia({
+                mes: mesDestinoMes,
+                ano: mesDestinoAno,
+                mesReferencia: mesDestino,
+            });
+
             const receitasSelecionadas = await receitaRepository.find({
                 where: {
                     id: In(receitaIdsNumericos),
@@ -189,18 +182,13 @@ async getAll(req: any, res: Response) {
                 },
                 relations: ["mesReferencia", "user"],
             });
-    
-            console.log("📄 Receitas encontradas:", receitasSelecionadas.length);
-    
+
             if (receitasSelecionadas.length === 0) {
                 return res.status(404).json({ message: "Nenhuma receita encontrada com os IDs fornecidos" });
             }
-    
-            // Duplicar receitas
-            const receitasDuplicadas = receitasSelecionadas.map((r) => {
-             
-    
-                const duplicada = receitaRepository.create({
+
+            const receitasDuplicadas = receitasSelecionadas.map((r) =>
+                receitaRepository.create({
                     descricao: r.descricao,
                     categoria: r.categoria,
                     status: r.status,
@@ -209,22 +197,17 @@ async getAll(req: any, res: Response) {
                     data: r.data,
                     mesReferencia: mesDestinoEntity,
                     user: r.user,
-                });
-    
-                console.log("🆕 Receita duplicada:", duplicada);
-                return duplicada;
-            });
-    
+                })
+            );
+
             await receitaRepository.save(receitasDuplicadas);
-    
-            return res.status(201).json({ message: "Receitas duplicadas com sucesso", receitas: receitasDuplicadas });
-    
+
+            return res.status(201).json({
+                message: "Receitas duplicadas com sucesso",
+                receitas: receitasDuplicadas.map(formatReceita),
+            });
         } catch (error) {
-            console.error("❌ Erro ao duplicar receitas:", error);
             return res.status(500).json({ message: "Erro ao duplicar receitas", error });
         }
     }
-    
-
-    
 }

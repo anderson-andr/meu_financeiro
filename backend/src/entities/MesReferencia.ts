@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Receita } from "./Receita"; // Ajuste se necessário
-import { Despesa } from "./Despesa"; // Ajuste se necessário
+import { Receita } from "./Receita";
+import { Despesa } from "./Despesa";
 
 @Entity()
 export class MesReferencia {
@@ -8,13 +8,17 @@ export class MesReferencia {
     id!: number;
 
     @Column()
-    referencia!: string;  // Certifique-se de que a propriedade "referencia" está aqui
+    referencia!: string;
 
-    // Relacionamento com a entidade Receita (One-to-Many)
+    @Column({ type: "int", nullable: true })
+    mes!: number | null;
+
+    @Column({ type: "int", nullable: true })
+    ano!: number | null;
+
     @OneToMany(() => Receita, (receita) => receita.mesReferencia)
     receitas!: Receita[];
 
-    // Relacionamento com a entidade Despesa (One-to-Many)
     @OneToMany(() => Despesa, (despesa) => despesa.mesReferencia)
     despesas!: Despesa[];
 }

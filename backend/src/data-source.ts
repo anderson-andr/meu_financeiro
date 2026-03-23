@@ -4,6 +4,8 @@ import { Receita } from "./entities/Receita";
 import { Despesa } from "./entities/Despesa";
 import { MesReferencia } from "./entities/MesReferencia";
 import { User } from "./entities/User";
+import { MetaFinanceira } from "./entities/MetaFinanceira";
+import { MetaAporte } from "./entities/MetaAporte";
 
 export const AppDataSource = new DataSource({
     type: "mariadb",
@@ -14,21 +16,20 @@ export const AppDataSource = new DataSource({
     database: "financeiro",
     synchronize: true,
     logging: false,
-    entities: [Receita, MesReferencia, Despesa, User],
+    entities: [Receita, MesReferencia, Despesa, User, MetaFinanceira, MetaAporte],
     migrations: [],
     subscribers: [],
 });
-// Em src/data-source.ts
+
 export const initializeDatabase = async () => {
     try {
         if (!AppDataSource.isInitialized) {
             await AppDataSource.initialize();
-            console.log("📦 Banco de dados conectado!");
+            console.log("Banco de dados conectado!");
         } else {
-            console.log("⚠️ Banco de dados já estava conectado.");
+            console.log("Banco de dados j� estava conectado.");
         }
     } catch (error) {
-        console.error("❌ Erro ao inicializar o banco de dados:", error);
+        console.error("Erro ao inicializar o banco de dados:", error);
     }
 };
-

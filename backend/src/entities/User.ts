@@ -2,6 +2,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Receita } from "./Receita";
 import { Despesa } from "./Despesa";
+import { MetaFinanceira } from "./MetaFinanceira";
 
 @Entity()
 export class User {
@@ -20,19 +21,18 @@ export class User {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-
     @OneToMany(() => Receita, (receita) => receita.user)
-    receitas!: Receita[]; // Relacionamento com as receitas do usuário
-    
+    receitas!: Receita[];
 
-    
     @OneToMany(() => Despesa, (despesa) => despesa.user)
     despesas!: Despesa[];
-}
 
+    @OneToMany(() => MetaFinanceira, (meta) => meta.user)
+    metas!: MetaFinanceira[];
+}
 
 export interface AuthUser {
     id: number;
     username: string;
-    userId: number; // Ad
-  }
+    userId: number;
+}

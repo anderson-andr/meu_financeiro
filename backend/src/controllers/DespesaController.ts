@@ -1,27 +1,58 @@
-// src/controllers/DespesaController.ts
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
 import { Despesa } from "../entities/Despesa";
 import { MesReferencia } from "../entities/MesReferencia";
 import { DespesaService } from "../services/DespesaService";
 import { In } from "typeorm";
+import { parseMonthReference } from "../utils/monthReference";
 
 const despesaRepository = AppDataSource.getRepository(Despesa);
 const mesReferenciaRepository = AppDataSource.getRepository(MesReferencia);
 const despesaService = new DespesaService(despesaRepository);
+
+const formatDespesa = (despesa: any) => ({
+  ...despesa,
+  mes: despesa.mesReferencia?.mes ?? null,
+  ano: despesa.mesReferencia?.ano ?? null,
+  mesReferencia: despesa.mesReferencia?.referencia ?? null,
+});
+
+const resolveMesReferencia = async (input: { mes?: unknown; ano?: unknown; mesReferencia?: unknown }) => {
+  const parsed = parseMonthReference(input);
+
+  let entity = await mesReferenciaRepository.findOne({
+    where: [
+      { referencia: parsed.referencia },
+      { mes: parsed.mes, ano: parsed.ano },
+    ],
+  });
+
+  if (!entity) {
+    entity = mesReferenciaRepository.create({
+      referencia: parsed.referencia,
+      mes: parsed.mes,
+      ano: parsed.ano,
+    });
+    await mesReferenciaRepository.save(entity);
+    return entity;
+  }
+
+  if (entity.referencia !== parsed.referencia || entity.mes !== parsed.mes || entity.ano !== parsed.ano) {
+    entity.referencia = parsed.referencia;
+    entity.mes = parsed.mes;
+    entity.ano = parsed.ano;
+    await mesReferenciaRepository.save(entity);
+  }
+
+  return entity;
+};
 
 export class DespesaController {
   async getAll(req: any, res: Response) {
     try {
       const userId = req.user.userId;
       const despesas = await despesaService.getAllByUser(userId);
-
-      const despesasComMesReferencia = despesas.map((despesa) => ({
-        ...despesa,
-        mesReferencia: despesa.mesReferencia ? despesa.mesReferencia.referencia : null,
-      }));
-
-      res.json(despesasComMesReferencia);
+      res.json(despesas.map(formatDespesa));
     } catch (error) {
       res.status(500).json({ message: "Erro ao buscar despesas", error });
     }
@@ -34,38 +65,34 @@ export class DespesaController {
 
       const despesa = await despesaService.getById(Number(id), userId);
       if (!despesa) {
-        return res.status(404).json({ message: "Despesa n√£o encontrada ou n√£o pertence ao usu√°rio" });
+        return res.status(404).json({ message: "Despesa n„o encontrada ou n„o pertence ao usu·rio" });
       }
 
-      res.json(despesa);
+      return res.json(formatDespesa(despesa));
     } catch (error) {
-      res.status(500).json({ message: "Erro ao buscar despesa", error });
+      return res.status(500).json({ message: "Erro ao buscar despesa", error });
     }
   }
 
   async create(req: any, res: Response) {
     try {
       const userId = req.user.userId;
-      const { mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
+      const { mes, ano, mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
 
-      if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
-        return res.status(400).json({ message: "Todos os campos s√£o obrigat√≥rios" });
+      if (!descricao || !categoria || !status || valorPrevisto === undefined || valorRealizado === undefined || !data) {
+        return res.status(400).json({ message: "Todos os campos s„o obrigatÛrios" });
       }
 
-      let mesReferenciaEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesReferencia } });
-      if (!mesReferenciaEntity) {
-        mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-        await mesReferenciaRepository.save(mesReferenciaEntity);
-      }
+      const mesReferenciaEntity = await resolveMesReferencia({ mes, ano, mesReferencia });
 
       const despesa = await despesaService.create(
         { descricao, categoria, status, valorPrevisto, valorRealizado, data, mesReferencia: mesReferenciaEntity },
         userId
       );
 
-      res.status(201).json(despesa);
+      return res.status(201).json(formatDespesa(despesa));
     } catch (error) {
-      res.status(500).json({ message: "Erro ao criar despesa", error });
+      return res.status(500).json({ message: "Erro ao criar despesa", error });
     }
   }
 
@@ -73,17 +100,13 @@ export class DespesaController {
     try {
       const userId = req.user.userId;
       const { id } = req.params;
-      const { mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
+      const { mes, ano, mesReferencia, descricao, categoria, status, valorPrevisto, valorRealizado, data } = req.body;
 
-      if (!mesReferencia || !descricao || !categoria || !status || !valorPrevisto || !valorRealizado || !data) {
-        return res.status(400).json({ message: "Todos os campos s√£o obrigat√≥rios" });
+      if (!descricao || !categoria || !status || valorPrevisto === undefined || valorRealizado === undefined || !data) {
+        return res.status(400).json({ message: "Todos os campos s„o obrigatÛrios" });
       }
 
-      let mesReferenciaEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesReferencia } });
-      if (!mesReferenciaEntity) {
-        mesReferenciaEntity = mesReferenciaRepository.create({ referencia: mesReferencia });
-        await mesReferenciaRepository.save(mesReferenciaEntity);
-      }
+      const mesReferenciaEntity = await resolveMesReferencia({ mes, ano, mesReferencia });
 
       const updatedDespesa = await despesaService.update(
         Number(id),
@@ -91,9 +114,9 @@ export class DespesaController {
         userId
       );
 
-      res.json(updatedDespesa);
+      return res.json(formatDespesa(updatedDespesa));
     } catch (error) {
-      res.status(500).json({ message: "Erro ao atualizar despesa", error });
+      return res.status(500).json({ message: "Erro ao atualizar despesa", error });
     }
   }
 
@@ -104,37 +127,37 @@ export class DespesaController {
 
       await despesaService.delete(Number(id), userId);
 
-      res.status(200).json({ message: "Despesa deletada com sucesso" });
+      return res.status(200).json({ message: "Despesa deletada com sucesso" });
     } catch (error) {
-      res.status(500).json({ message: "Erro ao deletar despesa", error });
+      return res.status(500).json({ message: "Erro ao deletar despesa", error });
     }
   }
 
   async duplicar(req: any, res: Response) {
     try {
       const userId = req.user.userId;
-      const {mesDestino, despesaIds } = req.body;
+      const { mesDestinoMes, mesDestinoAno, mesDestino, despesaIds } = req.body;
 
-      if (!mesDestino || !Array.isArray(despesaIds) || despesaIds.length === 0) {
-        return res.status(400).json({ message: "Informe o m√™s de destino e ao menos uma despesa para duplicar" });
+      if ((!mesDestino && (mesDestinoMes === undefined || mesDestinoAno === undefined)) || !Array.isArray(despesaIds) || despesaIds.length === 0) {
+        return res.status(400).json({ message: "Informe o mÍs de destino e ao menos uma despesa para duplicar" });
       }
 
       const despesaIdsNumericos = despesaIds
         .map((id: any) => {
           const parsed = parseInt(id);
-          return isNaN(parsed) ? null : parsed;
+          return Number.isNaN(parsed) ? null : parsed;
         })
         .filter((id: number | null): id is number => id !== null);
 
       if (despesaIdsNumericos.length === 0) {
-        return res.status(400).json({ message: "IDs de despesa inv√°lidos" });
+        return res.status(400).json({ message: "IDs de despesa inv·lidos" });
       }
 
-      let mesDestinoEntity = await mesReferenciaRepository.findOne({ where: { referencia: mesDestino } });
-      if (!mesDestinoEntity) {
-        mesDestinoEntity = mesReferenciaRepository.create({ referencia: mesDestino });
-        await mesReferenciaRepository.save(mesDestinoEntity);
-      }
+      const mesDestinoEntity = await resolveMesReferencia({
+        mes: mesDestinoMes,
+        ano: mesDestinoAno,
+        mesReferencia: mesDestino,
+      });
 
       const despesasSelecionadas = await despesaRepository.find({
         where: { id: In(despesaIdsNumericos), user: { id: userId } },
@@ -160,9 +183,11 @@ export class DespesaController {
 
       await despesaRepository.save(despesasDuplicadas);
 
-      return res.status(201).json({ message: "Despesas duplicadas com sucesso", despesas: despesasDuplicadas });
+      return res.status(201).json({
+        message: "Despesas duplicadas com sucesso",
+        despesas: despesasDuplicadas.map(formatDespesa),
+      });
     } catch (error) {
-      console.error("‚ùå Erro ao duplicar despesas:", error);
       return res.status(500).json({ message: "Erro ao duplicar despesas", error });
     }
   }
